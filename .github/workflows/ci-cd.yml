@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'apps/web/**'
+      - 'apps/desktop/frontend/**'
       - 'packages/**'
       - '.github/workflows/ci-cd.yml'
       - 'turbo.json'
@@ -19,6 +20,7 @@ on:
       - main
     paths:
       - 'apps/web/**'
+      - 'apps/desktop/frontend/**'
       - 'packages/**'
       - '.github/workflows/ci-cd.yml'
       - 'turbo.json'
@@ -61,6 +63,12 @@ jobs:
 
       - name: Type check
         run: pnpm typecheck
+
+      - name: Type check (native packages)
+        run: |
+          pnpm --filter @nicenote/store typecheck
+          pnpm --filter @nicenote/database typecheck
+          pnpm --filter @nicenote/ui-native typecheck
 
       - name: Test with coverage
         run: pnpm test -- --coverage

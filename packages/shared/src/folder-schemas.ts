@@ -42,14 +42,3 @@ export const folderIdParamSchema = z
 export type FolderSelect = z.infer<typeof folderSelectSchema>
 export type FolderCreateInput = z.infer<typeof folderCreateSchema>
 export type FolderUpdateInput = z.infer<typeof folderUpdateSchema>
-
-export interface FolderContractService {
-  list: () => Promise<FolderSelect[]> | FolderSelect[]
-  getById: (id: string) => Promise<FolderSelect | null> | FolderSelect | null
-  create: (input: FolderCreateInput) => Promise<FolderSelect> | FolderSelect
-  update: (
-    id: string,
-    input: FolderUpdateInput
-  ) => Promise<FolderSelect | null> | FolderSelect | null
-  remove: (id: string) => Promise<boolean> | boolean
-}

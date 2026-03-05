@@ -2,6 +2,7 @@
   "name": "web",
   "version": "0.0.0",
   "dependencies": {
+    "@nicenote/domain": "workspace:*",
     "@nicenote/editor": "workspace:*",
     "@nicenote/shared": "workspace:*",
     "@nicenote/ui": "workspace:*",

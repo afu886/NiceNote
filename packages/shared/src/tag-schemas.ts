@@ -47,14 +47,3 @@ export const noteTagParamSchema = z
 export type TagSelect = z.infer<typeof tagSelectSchema>
 export type TagCreateInput = z.infer<typeof tagCreateSchema>
 export type TagUpdateInput = z.infer<typeof tagUpdateSchema>
-
-export interface TagContractService {
-  list: () => Promise<TagSelect[]> | TagSelect[]
-  getById: (id: string) => Promise<TagSelect | null> | TagSelect | null
-  create: (input: TagCreateInput) => Promise<TagSelect> | TagSelect
-  update: (id: string, input: TagUpdateInput) => Promise<TagSelect | null> | TagSelect | null
-  remove: (id: string) => Promise<boolean> | boolean
-  addTagToNote: (noteId: string, tagId: string) => Promise<boolean> | boolean
-  removeTagFromNote: (noteId: string, tagId: string) => Promise<boolean> | boolean
-  getTagsForNote: (noteId: string) => Promise<TagSelect[]> | TagSelect[]
-}

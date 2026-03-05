@@ -200,6 +200,7 @@ function SearchDialogInner({ onClose }: { onClose: () => void }) {
               <SearchResultItem
                 key={result.path}
                 result={result}
+                query={query}
                 isSelected={index === safeIndex}
                 onClick={() => handleSelect(result)}
               />
@@ -235,11 +236,12 @@ function SearchDialogInner({ onClose }: { onClose: () => void }) {
 
 interface SearchResultItemProps {
   result: SearchResult
+  query: string
   isSelected: boolean
   onClick: () => void
 }
 
-function SearchResultItem({ result, isSelected, onClick }: SearchResultItemProps) {
+function SearchResultItem({ result, query, isSelected, onClick }: SearchResultItemProps) {
   const relativeTime = useMemo(() => {
     try {
       return formatDistanceToNow(new Date(result.updatedAt), {
@@ -274,14 +276,15 @@ function SearchResultItem({ result, isSelected, onClick }: SearchResultItemProps
           <span className="shrink-0 text-[10px] text-muted-foreground/50">{relativeTime}</span>
         </div>
 
-        {/* 高亮片段（后端用 <mark> 标注匹配位置） */}
+        {/* 安全高亮片段（纯 React 渲染，不使用 dangerouslySetInnerHTML） */}
         {result.snippet && (
           <p
             className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-muted-foreground/70
               [&_mark]:rounded [&_mark]:bg-yellow-200 [&_mark]:px-0.5 [&_mark]:text-foreground
               dark:[&_mark]:bg-yellow-500/30 dark:[&_mark]:text-foreground"
-            dangerouslySetInnerHTML={{ __html: result.snippet }}
-          />
+          >
+            <HighlightSnippet text={result.snippet} query={query} />
+          </p>
         )}
 
         {/* 标签 */}
@@ -299,5 +302,19 @@ function SearchResultItem({ result, isSelected, onClick }: SearchResultItemProps
         )}
       </div>
     </button>
+  )
+}
+
+// 安全高亮组件：在 snippet 中查找 query 并用 <mark> 渲染，不使用 dangerouslySetInnerHTML
+function HighlightSnippet({ text, query }: { text: string; query: string }) {
+  if (!query) return <>{text}</>
+  const idx = text.toLowerCase().indexOf(query.toLowerCase())
+  if (idx === -1) return <>{text}</>
+  return (
+    <>
+      {text.slice(0, idx)}
+      <mark>{text.slice(idx, idx + query.length)}</mark>
+      {text.slice(idx + query.length)}
+    </>
   )
 }

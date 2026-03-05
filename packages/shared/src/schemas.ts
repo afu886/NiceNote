@@ -92,12 +92,3 @@ export const noteSearchResultSchema = noteListItemSchema.extend({
 })
 
 export type NoteSearchResult = z.infer<typeof noteSearchResultSchema>
-
-export interface NoteContractService {
-  list: (query: NoteListQuery) => Promise<NoteListResult> | NoteListResult
-  getById: (id: string) => Promise<NoteSelect | null> | NoteSelect | null
-  create: (input: NoteCreateInput) => Promise<NoteSelect> | NoteSelect
-  update: (id: string, input: NoteUpdateInput) => Promise<NoteSelect | null> | NoteSelect | null
-  remove: (id: string) => Promise<boolean> | boolean
-  search: (query: NoteSearchQuery) => Promise<NoteSearchResult[]> | NoteSearchResult[]
-}

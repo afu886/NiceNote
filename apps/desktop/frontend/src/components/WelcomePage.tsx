@@ -23,7 +23,7 @@ export function WelcomePage() {
           useDesktopStore.setState({ recentFolders: folders })
         })
         .catch(() => {
-          // Wails 运行时未就绪时忽略错误
+          // Tauri 运行时未就绪时忽略错误
         })
     })
   }, [])

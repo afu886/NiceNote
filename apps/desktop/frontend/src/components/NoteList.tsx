@@ -8,6 +8,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { cn } from '@nicenote/ui'
 
 import type { NoteFile } from '../bindings/tauri'
+import { AppService } from '../bindings/tauri'
 import { useDesktopStore } from '../store/useDesktopStore'
 
 // ============================================================
@@ -491,14 +492,9 @@ function ContextMenu({
 
   // 在文件管理器中显示文件
   const handleRevealInFinder = useCallback(() => {
-    // Wails3 提供了 shell.ShowItemInFolder 等原生功能
-    // 通过自定义 IPC 或 wails runtime 调用
-    const runtime = (window as unknown as Record<string, unknown>).__wails as
-      | { shell?: { ShowItemInFolder?: (path: string) => void } }
-      | undefined
-    if (runtime?.shell?.ShowItemInFolder) {
-      runtime.shell.ShowItemInFolder(notePath)
-    }
+    AppService.RevealInExplorer(notePath).catch((err) => {
+      console.error('在文件管理器中显示失败:', err)
+    })
     onClose()
   }, [notePath, onClose])
 

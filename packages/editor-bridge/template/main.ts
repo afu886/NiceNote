@@ -7,12 +7,11 @@
  */
 
 import { Editor } from '@tiptap/core'
-import Link from '@tiptap/extension-link'
 import Placeholder from '@tiptap/extension-placeholder'
 import TextAlign from '@tiptap/extension-text-align'
 import Typography from '@tiptap/extension-typography'
+import { Markdown } from '@tiptap/markdown'
 import StarterKit from '@tiptap/starter-kit'
-import { Markdown } from 'tiptap-markdown'
 
 import type { BridgeMessage, EditorCommand, EditorEvent } from '../src/types'
 
@@ -43,12 +42,14 @@ function emit(event: EditorEvent): void {
 const editor = new Editor({
   element: document.getElementById('app')!,
   extensions: [
-    StarterKit.configure({ heading: { levels: [1, 2, 3] } }),
+    StarterKit.configure({
+      heading: { levels: [1, 2, 3] },
+      link: { openOnClick: false },
+    }),
     Markdown.configure({ html: false, transformPastedText: true }),
     Placeholder.configure({ placeholder: 'Start writing…' }),
     TextAlign.configure({ types: ['heading', 'paragraph'] }),
     Typography,
-    Link.configure({ openOnClick: false }),
   ],
   editorProps: {
     attributes: { spellcheck: 'true' },

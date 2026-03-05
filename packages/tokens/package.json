@@ -1,7 +1,11 @@
 {
   "name": "@nicenote/tokens",
   "version": "0.0.1",
+  "dependencies": {
+    "@nicenote/shared": "workspace:*"
+  },
   "devDependencies": {
+    "tsx": "^4.19.3",
     "typescript": "~5.9.3"
   },
   "exports": {

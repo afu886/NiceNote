@@ -3,12 +3,21 @@ use tauri_plugin_dialog::DialogExt;
 use tauri_plugin_opener::OpenerExt;
 
 #[tauri::command]
-pub fn open_folder_dialog(app: AppHandle) -> Result<String, String> {
-    let folder = app
-        .dialog()
+pub async fn open_folder_dialog(app: AppHandle) -> Result<String, String> {
+    let (tx, rx) = std::sync::mpsc::channel();
+
+    app.dialog()
         .file()
         .set_title("选择笔记文件夹")
-        .blocking_pick_folder();
+        .pick_folder(move |folder| {
+            let _ = tx.send(folder);
+        });
+
+    // 在异步上下文中阻塞等待，避免卡住主线程
+    let folder = tauri::async_runtime::spawn_blocking(move || rx.recv())
+        .await
+        .map_err(|e| e.to_string())?
+        .map_err(|e| e.to_string())?;
 
     match folder {
         Some(path) => Ok(path.to_string()),

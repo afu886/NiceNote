@@ -70,17 +70,13 @@ function searchNotes(notes: NoteSelect[], query: string, limit = 20): NoteSearch
 
     if (!titleMatch && contentIdx === -1) continue
 
-    // 从匹配位置提取摘要片段
+    // 从匹配位置提取纯文本摘要片段（不注入 HTML，避免 XSS）
     let snippet = ''
     if (contentIdx !== -1) {
       const start = Math.max(0, contentIdx - 40)
       const end = Math.min(content.length, contentIdx + q.length + 60)
       const raw = content.slice(start, end)
-      const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-      snippet =
-        (start > 0 ? '…' : '') +
-        raw.replace(new RegExp(escaped, 'gi'), (m) => `<mark>${m}</mark>`) +
-        (end < content.length ? '…' : '')
+      snippet = (start > 0 ? '…' : '') + raw + (end < content.length ? '…' : '')
     }
 
     results.push({

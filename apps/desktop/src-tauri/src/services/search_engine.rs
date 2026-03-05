@@ -99,7 +99,7 @@ pub fn search_notes(folder_path: &str, query: &str) -> Result<Vec<SearchResult>>
 }
 
 /// 从正文中提取命中关键词的上下文片段
-fn extract_snippet(body: &str, query_lower: &str) -> String {
+pub fn extract_snippet(body: &str, query_lower: &str) -> String {
     let body_lower = body.to_lowercase();
     if let Some(pos) = body_lower.find(query_lower) {
         let start = pos.saturating_sub(60);

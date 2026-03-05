@@ -4,10 +4,12 @@ mod services;
 
 use std::path::PathBuf;
 
-use notify_debouncer_mini::{notify::RecommendedWatcher, Debouncer};
+use notify::RecommendedWatcher;
 use parking_lot::Mutex;
 use rusqlite::Connection;
 use tauri::Manager;
+
+use services::search_index::SearchIndex;
 
 // ============================================================
 // 应用全局状态
@@ -15,7 +17,8 @@ use tauri::Manager;
 
 pub struct AppState {
     pub db: Mutex<Connection>,
-    pub watcher: Mutex<Option<Debouncer<RecommendedWatcher>>>,
+    pub watcher: Mutex<Option<RecommendedWatcher>>,
+    pub search_index: Mutex<SearchIndex>,
 }
 
 // ============================================================
@@ -44,6 +47,7 @@ pub fn run() {
             app.manage(AppState {
                 db: Mutex::new(conn),
                 watcher: Mutex::new(None),
+                search_index: Mutex::new(SearchIndex::default()),
             });
 
             Ok(())

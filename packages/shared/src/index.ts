@@ -19,7 +19,6 @@ export { getLinkValidationError } from './validators'
 // 领域 Schema & 类型
 // ============================================================
 export type {
-  NoteContractService,
   NoteCreateInput,
   NoteInsert,
   NoteListItem,
@@ -44,12 +43,7 @@ export {
 // ============================================================
 // Folder Schema & 类型
 // ============================================================
-export type {
-  FolderContractService,
-  FolderCreateInput,
-  FolderSelect,
-  FolderUpdateInput,
-} from './folder-schemas'
+export type { FolderCreateInput, FolderSelect, FolderUpdateInput } from './folder-schemas'
 export {
   folderCreateSchema,
   folderIdParamSchema,
@@ -60,7 +54,7 @@ export {
 // ============================================================
 // Tag Schema & 类型
 // ============================================================
-export type { TagContractService, TagCreateInput, TagSelect, TagUpdateInput } from './tag-schemas'
+export type { TagCreateInput, TagSelect, TagUpdateInput } from './tag-schemas'
 export {
   noteTagParamSchema,
   tagCreateSchema,

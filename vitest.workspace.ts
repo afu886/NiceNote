@@ -1,3 +1,3 @@
 import { defineWorkspace } from 'vitest/config'
 
-export default defineWorkspace(['packages/editor', 'packages/shared', 'apps/web', 'apps/api'])
+export default defineWorkspace(['packages/editor', 'packages/shared', 'apps/web'])

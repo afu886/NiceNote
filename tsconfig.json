@@ -5,7 +5,8 @@
     { "path": "./packages/editor" },
     { "path": "./packages/shared" },
     { "path": "./packages/tokens" },
-    { "path": "./packages/ui" }
+    { "path": "./packages/ui" },
+    { "path": "./packages/domain" }
     // Phase 6 stubs – uncomment when dependencies are installed:
     // { "path": "./apps/mobile" },
     // { "path": "./packages/database" },
