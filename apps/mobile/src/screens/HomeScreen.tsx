@@ -1,10 +1,7 @@
 import React from 'react'
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native'
 
-// TODO: Replace with actual note list fetched from @nicenote/database
-// TODO: Integrate ../store for state management
-// TODO: Add FAB for creating new notes
-// TODO: Add folder sidebar / drawer navigation
+// experimental：当前仅保留占位列表页，不接入共享 store 或数据层。
 
 export function HomeScreen(): React.JSX.Element {
   return (
@@ -12,7 +9,6 @@ export function HomeScreen(): React.JSX.Element {
       <View style={styles.content}>
         <Text style={styles.title}>NiceNote</Text>
         <Text style={styles.subtitle}>Your notes will appear here</Text>
-        {/* TODO: Replace with FlatList of notes */}
         <View style={styles.placeholder}>
           <Text style={styles.placeholderText}>No notes yet. Tap + to create one.</Text>
         </View>

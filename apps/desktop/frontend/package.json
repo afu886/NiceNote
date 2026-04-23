@@ -4,6 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "pnpm --filter @nicenote/tokens build && tsc --noEmit && vite build",
+    "lint": "eslint .",
+    "test": "vitest run --passWithNoTests",
     "dev:frontend": "pnpm --filter @nicenote/tokens build && vite",
     "build:frontend": "pnpm --filter @nicenote/tokens build && tsc --noEmit && vite build",
     "generate:css": "pnpm --filter @nicenote/tokens generate:css",
@@ -11,7 +14,6 @@
   },
   "dependencies": {
     "@nicenote/app-shell": "workspace:*",
-    "@nicenote/domain": "workspace:*",
     "@nicenote/editor": "workspace:*",
     "@nicenote/shared": "workspace:*",
     "@nicenote/ui": "workspace:*",

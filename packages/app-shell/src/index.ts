@@ -4,12 +4,7 @@ export { AppShellContext, useAppShell } from './context'
 
 // Types
 export type {
-  AppNoteDetail,
-  AppNoteItem,
-  AppSearchResult,
   AppTagInfo,
-  NavItemConfig,
-  NoteListItemSlots,
   NoteTagActions,
   SidebarState,
   Toast,
@@ -61,8 +56,6 @@ export {
   ICON_SM_CLASS,
   ROW_WITH_ICON_CLASS,
 } from './lib/class-names'
-export { createRepositoryProvider } from './lib/create-repository-provider'
 export { getDateLocale } from './lib/date-locale'
-export { mapToAppSearchResults } from './lib/search-utils'
 export type { ShortcutDefinition } from './lib/shortcuts'
 export { formatShortcut, matchesShortcut, MOD_KEY_LABEL, SHORTCUTS } from './lib/shortcuts'

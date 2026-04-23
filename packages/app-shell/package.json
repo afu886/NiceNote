@@ -17,7 +17,6 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@nicenote/domain": "workspace:*",
     "@nicenote/editor": "workspace:*",
     "@nicenote/shared": "workspace:*",
     "@nicenote/ui": "workspace:*",

@@ -1,33 +1,33 @@
 import { createContext, useContext } from 'react'
 
-import type { Language, Theme } from '@nicenote/domain'
+import type { Language, Theme } from '@nicenote/shared'
 
-import type {
-  AppNoteDetail,
-  AppNoteItem,
-  AppSearchResult,
-  AppTagInfo,
-  NavItemConfig,
-  NoteListItemSlots,
-  NoteTagActions,
-  SidebarState,
-  Toast,
-  ToastOptions,
-} from './types'
+import type { AppTagInfo, NoteTagActions, SidebarState, Toast, ToastOptions } from './types'
 
 // ============================================================
-// AppShell Context — 两端共享的统一接口
+// AppShell Context — 仅保留两端共享核心能力
 // ============================================================
 
 export interface AppShellContextValue {
   // ---- 笔记列表 ----
-  notes: AppNoteItem[]
+  notes: Array<{
+    id: string
+    title: string
+    summary: string | null
+    tags: string[]
+    updatedAt: string
+  }>
   selectedNoteId: string | null
   isLoading: boolean
 
   // ---- 当前笔记 ----
-  currentNote: AppNoteDetail | null
-  saveState?: 'saved' | 'saving' | 'unsaved'
+  currentNote: {
+    id: string
+    title: string
+    content: string | null
+    tags: string[]
+    updatedAt: string
+  } | null
 
   // ---- 笔记操作 ----
   selectNote: (id: string | null) => void
@@ -40,8 +40,6 @@ export interface AppShellContextValue {
 
   // ---- 标签 ----
   tags: AppTagInfo[]
-  selectedTag: string | null
-  setSelectedTag: (tag: string | null) => void
   noteTagActions: NoteTagActions
 
   // ---- 主题 ----
@@ -58,12 +56,13 @@ export interface AppShellContextValue {
   removeToast: (id: string) => void
 
   // ---- 搜索 ----
-  searchNotes: (query: string) => Promise<AppSearchResult[]>
-
-  // ---- 平台扩展 ----
-  isMobile: boolean
-  extraNavItems?: NavItemConfig[]
-  noteListItemSlots?: NoteListItemSlots
+  searchNotes: (query: string) => Promise<
+    Array<{
+      id: string
+      title: string
+      snippet: string
+    }>
+  >
 }
 
 export const AppShellContext = createContext<AppShellContextValue | null>(null)

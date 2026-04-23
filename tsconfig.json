@@ -1,13 +1,15 @@
 {
   "files": [],
   "references": [
+    // supported surfaces + 当前仍被正式支持路径使用的共享包
     { "path": "./apps/web" },
+    { "path": "./apps/desktop/frontend" },
+    { "path": "./packages/app-shell" },
     { "path": "./packages/editor" },
     { "path": "./packages/shared" },
     { "path": "./packages/tokens" },
-    { "path": "./packages/ui" },
-    { "path": "./packages/domain" }
-    // Phase 6 stubs – uncomment when dependencies are installed:
+    { "path": "./packages/ui" }
+    // experimental mobile boundary：未升级为 supported 前，不进入 root tsc -b
     // { "path": "./apps/mobile" },
     // { "path": "./packages/database" },
     // { "path": "./packages/editor-bridge" },

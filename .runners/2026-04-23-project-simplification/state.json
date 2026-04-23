@@ -1,0 +1,116 @@
+{
+  "batches": {
+    "00-01-baseline-evidence": {
+      "status": "done",
+      "ts": "2026-04-22T16:42:12Z",
+      "duration_sec": 574.7,
+      "log": ".runners/2026-04-23-project-simplification/logs/00-01-baseline-evidence.log",
+      "prompt": ".runners/2026-04-23-project-simplification/prompts/00-01-baseline-evidence.md"
+    },
+    "00-02-support-matrix": {
+      "status": "done",
+      "ts": "2026-04-22T16:44:53Z",
+      "duration_sec": 160.2,
+      "log": ".runners/2026-04-23-project-simplification/logs/00-02-support-matrix.log",
+      "prompt": ".runners/2026-04-23-project-simplification/prompts/00-02-support-matrix.md"
+    },
+    "01-01-desktop-search-collapse": {
+      "status": "done",
+      "ts": "2026-04-22T16:49:14Z",
+      "duration_sec": 251.7,
+      "log": ".runners/2026-04-23-project-simplification/logs/01-01-desktop-search-collapse.log",
+      "prompt": ".runners/2026-04-23-project-simplification/prompts/01-01-desktop-search-collapse.md"
+    },
+    "01-02-remove-phantom-desktop-state": {
+      "status": "done",
+      "ts": "2026-04-22T16:56:07Z",
+      "duration_sec": 398.0,
+      "log": ".runners/2026-04-23-project-simplification/logs/01-02-remove-phantom-desktop-state.log",
+      "prompt": ".runners/2026-04-23-project-simplification/prompts/01-02-remove-phantom-desktop-state.md"
+    },
+    "02-01-detach-mobile-runtime-shell": {
+      "status": "done",
+      "ts": "2026-04-22T16:59:49Z",
+      "duration_sec": 220.9,
+      "log": ".runners/2026-04-23-project-simplification/logs/02-01-detach-mobile-runtime-shell.log",
+      "prompt": ".runners/2026-04-23-project-simplification/prompts/02-01-detach-mobile-runtime-shell.md"
+    },
+    "02-02-prune-mobile-dead-structure": {
+      "status": "done",
+      "ts": "2026-04-22T17:05:47Z",
+      "duration_sec": 356.2,
+      "log": ".runners/2026-04-23-project-simplification/logs/02-02-prune-mobile-dead-structure.log",
+      "prompt": ".runners/2026-04-23-project-simplification/prompts/02-02-prune-mobile-dead-structure.md"
+    },
+    "03-01-minimize-shared-context": {
+      "status": "done",
+      "ts": "2026-04-22T17:12:19Z",
+      "duration_sec": 374.2,
+      "log": ".runners/2026-04-23-project-simplification/logs/03-01-minimize-shared-context.log",
+      "prompt": ".runners/2026-04-23-project-simplification/prompts/03-01-minimize-shared-context.md"
+    },
+    "03-02-remove-appshell-model-layer": {
+      "status": "done",
+      "ts": "2026-04-22T17:18:49Z",
+      "duration_sec": 369.6,
+      "log": ".runners/2026-04-23-project-simplification/logs/03-02-remove-appshell-model-layer.log",
+      "prompt": ".runners/2026-04-23-project-simplification/prompts/03-02-remove-appshell-model-layer.md"
+    },
+    "03-03-remove-repository-provider-factory": {
+      "status": "done",
+      "ts": "2026-04-22T17:21:09Z",
+      "duration_sec": 137.6,
+      "log": ".runners/2026-04-23-project-simplification/logs/03-03-remove-repository-provider-factory.log",
+      "prompt": ".runners/2026-04-23-project-simplification/prompts/03-03-remove-repository-provider-factory.md"
+    },
+    "04-01-web-direct-note-path": {
+      "status": "done",
+      "ts": "2026-04-22T17:25:59Z",
+      "duration_sec": 280.7,
+      "log": ".runners/2026-04-23-project-simplification/logs/04-01-web-direct-note-path.log",
+      "prompt": ".runners/2026-04-23-project-simplification/prompts/04-01-web-direct-note-path.md"
+    },
+    "04-02-desktop-remove-repository-layer": {
+      "status": "done",
+      "ts": "2026-04-22T17:30:05Z",
+      "duration_sec": 235.7,
+      "log": ".runners/2026-04-23-project-simplification/logs/04-02-desktop-remove-repository-layer.log",
+      "prompt": ".runners/2026-04-23-project-simplification/prompts/04-02-desktop-remove-repository-layer.md"
+    },
+    "04-03-flatten-desktop-store": {
+      "status": "done",
+      "ts": "2026-04-22T17:35:03Z",
+      "duration_sec": 286.5,
+      "log": ".runners/2026-04-23-project-simplification/logs/04-03-flatten-desktop-store.log",
+      "prompt": ".runners/2026-04-23-project-simplification/prompts/04-03-flatten-desktop-store.md"
+    },
+    "05-01-prune-domain-runtime": {
+      "status": "done",
+      "ts": "2026-04-22T17:41:22Z",
+      "duration_sec": 375.2,
+      "log": ".runners/2026-04-23-project-simplification/logs/05-01-prune-domain-runtime.log",
+      "prompt": ".runners/2026-04-23-project-simplification/prompts/05-01-prune-domain-runtime.md"
+    },
+    "05-02-delete-draft-adapters-and-dead-packages": {
+      "status": "done",
+      "ts": "2026-04-22T17:46:14Z",
+      "duration_sec": 290.9,
+      "log": ".runners/2026-04-23-project-simplification/logs/05-02-delete-draft-adapters-and-dead-packages.log",
+      "prompt": ".runners/2026-04-23-project-simplification/prompts/05-02-delete-draft-adapters-and-dead-packages.md"
+    },
+    "99-01-supported-surface-regression": {
+      "status": "done",
+      "ts": "2026-04-22T17:53:59Z",
+      "duration_sec": 446.6,
+      "log": ".runners/2026-04-23-project-simplification/logs/99-01-supported-surface-regression.log",
+      "prompt": ".runners/2026-04-23-project-simplification/prompts/99-01-supported-surface-regression.md"
+    },
+    "99-02-capture-post-rollout-evidence": {
+      "status": "done",
+      "ts": "2026-04-22T17:58:24Z",
+      "duration_sec": 265.3,
+      "log": ".runners/2026-04-23-project-simplification/logs/99-02-capture-post-rollout-evidence.log",
+      "prompt": ".runners/2026-04-23-project-simplification/prompts/99-02-capture-post-rollout-evidence.md"
+    }
+  }
+}

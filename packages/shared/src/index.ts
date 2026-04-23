@@ -9,6 +9,7 @@
 // ============================================================
 export { DEFAULT_NOTE_TITLE, LANG_STORAGE_KEY, THEME_STORAGE_KEY } from './constants'
 export { toKebabCase } from './parsers'
+export type { Language, Settings, Theme } from './settings'
 export { debounce } from './utils/debounce'
 export { formatShortcutKey, isMac, MAC_SYMBOLS, parseShortcutKeys } from './utils/platform'
 export { sanitizeContent } from './utils/sanitize'

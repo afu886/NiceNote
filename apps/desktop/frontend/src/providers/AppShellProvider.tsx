@@ -1,73 +1,16 @@
-import { memo, useCallback, useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { FolderTree, Star } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
-import type {
-  AppNoteDetail,
-  AppNoteItem,
-  AppShellContextValue,
-  AppTagInfo,
-  NavItemConfig,
-} from '@nicenote/app-shell'
-import { AppShellContext, ICON_SM_CLASS, mapToAppSearchResults } from '@nicenote/app-shell'
-import type { Language, Theme } from '@nicenote/domain'
+import type { AppShellContextValue, AppTagInfo } from '@nicenote/app-shell'
+import { AppShellContext } from '@nicenote/app-shell'
+import type { Language, Theme } from '@nicenote/shared'
 
-import { getCurrentRepo } from '../adapters/repository-provider'
-import type { NoteContent, NoteFile } from '../bindings/tauri'
+import { AppService } from '../bindings/tauri'
 import { useDesktopStore } from '../store/useDesktopStore'
 import { useSidebarStore } from '../store/useSidebarStore'
 import { useToastStore } from '../store/useToastStore'
-
-// ============================================================
-// 数据模型转换
-// ============================================================
-
-function noteFileToAppItem(note: NoteFile): AppNoteItem {
-  return {
-    id: note.path,
-    title: note.title,
-    summary: note.summary || null,
-    tags: note.tags,
-    updatedAt: note.updatedAt,
-    createdAt: note.createdAt,
-  }
-}
-
-function noteContentToAppDetail(note: NoteContent): AppNoteDetail {
-  return {
-    id: note.path,
-    title: note.title,
-    summary: note.summary || null,
-    tags: note.tags,
-    updatedAt: note.updatedAt,
-    createdAt: note.createdAt,
-    content: note.content,
-  }
-}
-
-// ============================================================
-// 收藏按钮组件
-// ============================================================
-
-const FavoriteButton = memo(function FavoriteButton({ path }: { path: string }) {
-  const isFavorite = useDesktopStore((s) => s.favorites.includes(path))
-  const toggleFavorite = useDesktopStore((s) => s.toggleFavorite)
-
-  return (
-    <button
-      onClick={(e) => {
-        e.stopPropagation()
-        toggleFavorite(path)
-      }}
-      aria-label={isFavorite ? '取消收藏' : '收藏'}
-      className="rounded p-1 text-muted-foreground/60 transition-colors hover:text-yellow-500"
-    >
-      <Star className={`h-3.5 w-3.5 ${isFavorite ? 'fill-yellow-400 text-yellow-400' : ''}`} />
-    </button>
-  )
-})
 
 // ============================================================
 // Provider
@@ -76,15 +19,12 @@ const FavoriteButton = memo(function FavoriteButton({ path }: { path: string }) 
 export function DesktopAppShellProvider({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation()
 
+  const currentFolder = useDesktopStore((s) => s.currentFolder)
   const store = useDesktopStore(
     useShallow((s) => ({
       notes: s.notes,
       activeNote: s.activeNote,
       isLoading: s.isLoading,
-      saveState: s.saveState,
-      currentView: s.currentView,
-      selectedTag: s.selectedTag,
-      favorites: s.favorites,
       tagColors: s.tagColors,
       settings: s.settings,
       // actions
@@ -93,10 +33,7 @@ export function DesktopAppShellProvider({ children }: { children: React.ReactNod
       renameNote: s.renameNote,
       createNote: s.createNote,
       deleteNote: s.deleteNote,
-      setSelectedTag: s.setSelectedTag,
-      setCurrentView: s.setCurrentView,
       saveSettings: s.saveSettings,
-      toggleFavorite: s.toggleFavorite,
     }))
   )
 
@@ -104,14 +41,28 @@ export function DesktopAppShellProvider({ children }: { children: React.ReactNod
   const sidebar = useSidebarStore()
   const { toasts, addToast, removeToast } = useToastStore()
 
-  // 转换笔记列表
-  const appNotes = useMemo(() => store.notes.map(noteFileToAppItem), [store.notes])
-
-  // 当前笔记
-  const currentNote = useMemo(
-    () => (store.activeNote ? noteContentToAppDetail(store.activeNote) : null),
-    [store.activeNote]
+  const appNotes = useMemo<AppShellContextValue['notes']>(
+    () =>
+      store.notes.map((note) => ({
+        id: note.path,
+        title: note.title,
+        summary: note.summary || null,
+        tags: note.tags,
+        updatedAt: note.updatedAt,
+      })),
+    [store.notes]
   )
+
+  const currentNote = useMemo<AppShellContextValue['currentNote']>(() => {
+    if (!store.activeNote) return null
+    return {
+      id: store.activeNote.path,
+      title: store.activeNote.title,
+      content: store.activeNote.content,
+      tags: store.activeNote.tags,
+      updatedAt: store.activeNote.updatedAt,
+    }
+  }, [store.activeNote])
 
   // 选中的笔记 ID
   const selectedNoteId = store.activeNote?.path ?? null
@@ -174,17 +125,23 @@ export function DesktopAppShellProvider({ children }: { children: React.ReactNod
   )
 
   // 搜索
-  const searchNotes = useCallback(async (query: string) => {
-    const repo = getCurrentRepo()
-    if (!query.trim() || !repo) return []
-    try {
-      const results = await repo.search({ q: query, limit: 20 })
-      return mapToAppSearchResults(results)
-    } catch (err) {
-      console.error('搜索笔记失败:', err)
-      return []
-    }
-  }, [])
+  const searchNotes = useCallback<AppShellContextValue['searchNotes']>(
+    async (query) => {
+      if (!query.trim() || !currentFolder) return []
+      try {
+        const results = await AppService.searchNotes(currentFolder, query)
+        return results.slice(0, 20).map((result) => ({
+          id: result.path,
+          title: result.title,
+          snippet: result.snippet,
+        }))
+      } catch (err) {
+        console.error('搜索笔记失败:', err)
+        return []
+      }
+    },
+    [currentFolder]
+  )
 
   // 主题和语言
   const setTheme = useCallback(
@@ -223,53 +180,18 @@ export function DesktopAppShellProvider({ children }: { children: React.ReactNod
     [store.saveNote]
   )
 
-  // 额外导航项（desktop 专有）
-  const extraNavItems: NavItemConfig[] = useMemo(
-    () => [
-      {
-        id: 'favorites',
-        icon: <Star className={ICON_SM_CLASS} />,
-        label: t('nav.favorites'),
-        isActive: store.currentView === 'favorites',
-        onClick: () => store.setCurrentView('favorites'),
-      },
-      {
-        id: 'folder-tree',
-        icon: <FolderTree className={ICON_SM_CLASS} />,
-        label: t('nav.folderTree'),
-        isActive: store.currentView === 'folder-tree',
-        onClick: () => store.setCurrentView('folder-tree'),
-      },
-    ],
-    [store.currentView, store.setCurrentView, t]
-  )
-
-  // 列表项扩展（收藏星标 + 右键菜单）
-  const noteListItemSlots = useMemo(
-    () => ({
-      renderActions: (noteId: string) => <FavoriteButton path={noteId} />,
-      onContextMenu: (_noteId: string, e: React.MouseEvent) => {
-        e.preventDefault()
-      },
-    }),
-    []
-  )
-
   const value: AppShellContextValue = useMemo(
     () => ({
       notes: appNotes,
       selectedNoteId,
       isLoading: store.isLoading,
       currentNote,
-      saveState: store.saveState,
       selectNote,
       createNote: handleCreateNote,
       deleteNote: handleDeleteNote,
       updateNote,
       sidebar,
       tags: appTags,
-      selectedTag: store.selectedTag,
-      setSelectedTag: store.setSelectedTag,
       noteTagActions,
       theme: store.settings.theme,
       setTheme,
@@ -279,24 +201,18 @@ export function DesktopAppShellProvider({ children }: { children: React.ReactNod
       addToast,
       removeToast,
       searchNotes,
-      isMobile: false,
-      extraNavItems,
-      noteListItemSlots,
     }),
     [
       appNotes,
       selectedNoteId,
       store.isLoading,
       currentNote,
-      store.saveState,
       selectNote,
       handleCreateNote,
       handleDeleteNote,
       updateNote,
       sidebar,
       appTags,
-      store.selectedTag,
-      store.setSelectedTag,
       noteTagActions,
       store.settings.theme,
       setTheme,
@@ -306,8 +222,6 @@ export function DesktopAppShellProvider({ children }: { children: React.ReactNod
       addToast,
       removeToast,
       searchNotes,
-      extraNavItems,
-      noteListItemSlots,
     ]
   )
 

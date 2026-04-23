@@ -1,8 +1,7 @@
 import { create } from 'zustand'
 
 import { applyLanguageToDOM, applyThemeToDOM } from '@nicenote/app-shell'
-import type { Language, Theme } from '@nicenote/domain'
-import { LANG_STORAGE_KEY } from '@nicenote/shared'
+import { LANG_STORAGE_KEY, type Language, type Theme } from '@nicenote/shared'
 
 interface SettingsStore {
   theme: Theme

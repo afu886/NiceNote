@@ -1,4 +1,4 @@
-import { and, desc, eq, lt, or, sql } from 'drizzle-orm'
+import { and, desc, eq, isNull, lt, or, sql } from 'drizzle-orm'
 import { nanoid } from 'nanoid/non-secure'
 
 import { DEFAULT_NOTE_TITLE } from '@nicenote/shared'
@@ -40,10 +40,12 @@ export interface SearchNotesOptions {
 export class NoteService {
   constructor(private readonly db: Database) {}
 
-  list(opts: ListNotesOptions = {}): { data: NoteListRow[]; nextCursor: string | null } {
+  async list(
+    opts: ListNotesOptions = {}
+  ): Promise<{ data: NoteListRow[]; nextCursor: string | null }> {
     const limit = opts.limit ?? 50
 
-    const rows = this.db
+    const rows = await this.db
       .select({
         id: notes.id,
         title: notes.title,
@@ -55,7 +57,11 @@ export class NoteService {
       .from(notes)
       .where(
         and(
-          opts.folderId !== undefined ? eq(notes.folderId, opts.folderId as string) : undefined,
+          opts.folderId === null
+            ? isNull(notes.folderId)
+            : opts.folderId !== undefined
+              ? eq(notes.folderId, opts.folderId)
+              : undefined,
           opts.cursor
             ? or(
                 lt(notes.updatedAt, opts.cursor.updatedAt),
@@ -76,19 +82,20 @@ export class NoteService {
     return { data, nextCursor }
   }
 
-  getById(id: string): NoteRow | null {
+  async getById(id: string): Promise<NoteRow | null> {
     return (
-      (this.db.select().from(notes).where(eq(notes.id, id)).get() as NoteRow | undefined) ?? null
+      ((await this.db.select().from(notes).where(eq(notes.id, id)).get()) as NoteRow | undefined) ??
+      null
     )
   }
 
-  search(opts: SearchNotesOptions): NoteListRow[] {
+  async search(opts: SearchNotesOptions): Promise<NoteListRow[]> {
     const limit = opts.limit ?? 20
     // Escape special FTS5 characters
     const term = opts.query.replace(/['"*]/g, ' ').trim()
     if (!term) return []
 
-    return this.db
+    return (await this.db
       .select({
         id: notes.id,
         title: notes.title,
@@ -106,10 +113,14 @@ export class NoteService {
           LIMIT ${limit}
         )`
       )
-      .all() as NoteListRow[]
+      .all()) as NoteListRow[]
   }
 
-  create(input: { title?: string; content?: string | null; folderId?: string | null }): NoteRow {
+  async create(input: {
+    title?: string
+    content?: string | null
+    folderId?: string | null
+  }): Promise<NoteRow> {
     const now = new Date().toISOString()
     const row: NoteRow = {
       id: nanoid(),
@@ -120,11 +131,11 @@ export class NoteService {
       createdAt: now,
       updatedAt: now,
     }
-    this.db.insert(notes).values(row).run()
+    await this.db.insert(notes).values(row).run()
     return row
   }
 
-  update(
+  async update(
     id: string,
     patch: {
       title?: string
@@ -132,8 +143,8 @@ export class NoteService {
       summary?: string | null
       folderId?: string | null
     }
-  ): NoteRow | null {
-    const existing = this.getById(id)
+  ): Promise<NoteRow | null> {
+    const existing = await this.getById(id)
     if (!existing) return null
 
     const updated: Partial<NoteRow> = {
@@ -144,19 +155,19 @@ export class NoteService {
     if (patch.summary !== undefined) updated.summary = patch.summary
     if (patch.folderId !== undefined) updated.folderId = patch.folderId
 
-    this.db.update(notes).set(updated).where(eq(notes.id, id)).run()
+    await this.db.update(notes).set(updated).where(eq(notes.id, id)).run()
     return { ...existing, ...updated }
   }
 
-  delete(id: string): void {
-    this.db.delete(notes).where(eq(notes.id, id)).run()
+  async delete(id: string): Promise<void> {
+    await this.db.delete(notes).where(eq(notes.id, id)).run()
   }
 
   /** Attach / detach tags (replaces the full tag set for the note). */
-  setTags(noteId: string, tagIds: string[]): void {
-    this.db.delete(noteTags).where(eq(noteTags.noteId, noteId)).run()
+  async setTags(noteId: string, tagIds: string[]): Promise<void> {
+    await this.db.delete(noteTags).where(eq(noteTags.noteId, noteId)).run()
     if (tagIds.length === 0) return
-    this.db
+    await this.db
       .insert(noteTags)
       .values(tagIds.map((tagId) => ({ noteId, tagId })))
       .run()

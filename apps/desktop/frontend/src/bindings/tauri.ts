@@ -1,6 +1,8 @@
 import { invoke } from '@tauri-apps/api/core'
 
-import type { Language, Theme } from '@nicenote/domain'
+import type { Settings } from '@nicenote/shared'
+
+export type { Settings } from '@nicenote/shared'
 
 // ============================================================
 // 数据类型
@@ -34,11 +36,6 @@ export interface SearchResult {
   tags: string[]
   createdAt: string
   updatedAt: string
-}
-
-export interface Settings {
-  theme: Theme
-  language: Language
 }
 
 // ============================================================

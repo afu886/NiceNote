@@ -1,6 +1,7 @@
 {
   "name": "@nicenote/database",
   "version": "0.0.1",
+  "description": "experimental mobile-only data layer",
   "dependencies": {
     "drizzle-orm": "^0.44.2",
     "nanoid": "^5.0.0",
@@ -15,8 +16,7 @@
     }
   },
   "devDependencies": {
-    "typescript": "~5.9.3",
-    "@types/react": "^19.0.0"
+    "typescript": "~5.9.3"
   },
   "exports": {
     ".": "./src/index.ts"

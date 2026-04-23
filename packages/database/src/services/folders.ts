@@ -16,18 +16,23 @@ export interface FolderRow {
 export class FolderService {
   constructor(private readonly db: Database) {}
 
-  listAll(): FolderRow[] {
-    return this.db.select().from(folders).all() as FolderRow[]
+  async listAll(): Promise<FolderRow[]> {
+    return (await this.db.select().from(folders).all()) as FolderRow[]
   }
 
-  getById(id: string): FolderRow | null {
+  async getById(id: string): Promise<FolderRow | null> {
     return (
-      (this.db.select().from(folders).where(eq(folders.id, id)).get() as FolderRow | undefined) ??
-      null
+      ((await this.db.select().from(folders).where(eq(folders.id, id)).get()) as
+        | FolderRow
+        | undefined) ?? null
     )
   }
 
-  create(input: { name: string; parentId?: string | null; position?: number }): FolderRow {
+  async create(input: {
+    name: string
+    parentId?: string | null
+    position?: number
+  }): Promise<FolderRow> {
     const now = new Date().toISOString()
     const row: FolderRow = {
       id: nanoid(),
@@ -37,15 +42,15 @@ export class FolderService {
       createdAt: now,
       updatedAt: now,
     }
-    this.db.insert(folders).values(row).run()
+    await this.db.insert(folders).values(row).run()
     return row
   }
 
-  update(
+  async update(
     id: string,
     patch: { name?: string; parentId?: string | null; position?: number }
-  ): FolderRow | null {
-    const existing = this.getById(id)
+  ): Promise<FolderRow | null> {
+    const existing = await this.getById(id)
     if (!existing) return null
 
     const updated: Partial<FolderRow> = { updatedAt: new Date().toISOString() }
@@ -53,12 +58,12 @@ export class FolderService {
     if (patch.parentId !== undefined) updated.parentId = patch.parentId
     if (patch.position !== undefined) updated.position = patch.position
 
-    this.db.update(folders).set(updated).where(eq(folders.id, id)).run()
+    await this.db.update(folders).set(updated).where(eq(folders.id, id)).run()
     return { ...existing, ...updated }
   }
 
-  delete(id: string): void {
+  async delete(id: string): Promise<void> {
     // Cascade deletes children + nullifies note folder references via FK constraints
-    this.db.delete(folders).where(eq(folders.id, id)).run()
+    await this.db.delete(folders).where(eq(folders.id, id)).run()
   }
 }

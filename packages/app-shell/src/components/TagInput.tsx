@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next'
 
 import { Plus } from 'lucide-react'
 
-import { useAppShell } from '../context'
 import { ICON_SM_CLASS } from '../lib/class-names'
+import type { AppTagInfo, NoteTagActions } from '../types'
 
 import { TagPill } from './TagPill'
 
@@ -12,39 +12,43 @@ interface TagInputProps {
   noteId: string
   /** 当前笔记的标签名列表 */
   noteTags: string[]
-  /** 标签颜色映射（可选，desktop 通过 context.tags 提供） */
-  tagColors?: Record<string, string | undefined>
+  availableTags: AppTagInfo[]
+  noteTagActions: NoteTagActions
 }
 
-export const TagInput = memo(function TagInput({ noteId, noteTags, tagColors }: TagInputProps) {
+export const TagInput = memo(function TagInput({
+  noteId,
+  noteTags,
+  availableTags,
+  noteTagActions,
+}: TagInputProps) {
   const { t } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
   const [search, setSearch] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const { tags, noteTagActions } = useAppShell()
-
   const noteTagSet = useMemo(() => new Set(noteTags), [noteTags])
 
-  // 构建颜色映射：优先使用 props，否则从 context.tags 获取
+  // 构建标签颜色映射，避免渲染时重复遍历
   const colorMap = useMemo(() => {
-    if (tagColors) return tagColors
     const map: Record<string, string | undefined> = {}
-    for (const tag of tags) {
+    for (const tag of availableTags) {
       map[tag.name] = tag.color
     }
     return map
-  }, [tagColors, tags])
+  }, [availableTags])
 
   const filteredTags = useMemo(() => {
     const lower = search.toLowerCase()
-    return tags.filter((tag) => !noteTagSet.has(tag.name) && tag.name.toLowerCase().includes(lower))
-  }, [tags, noteTagSet, search])
+    return availableTags.filter(
+      (tag) => !noteTagSet.has(tag.name) && tag.name.toLowerCase().includes(lower)
+    )
+  }, [availableTags, noteTagSet, search])
 
   const showCreateOption = useMemo(() => {
     if (!search.trim()) return false
-    return !tags.some((t) => t.name.toLowerCase() === search.toLowerCase().trim())
-  }, [tags, search])
+    return !availableTags.some((tag) => tag.name.toLowerCase() === search.toLowerCase().trim())
+  }, [availableTags, search])
 
   const handleAddExisting = useCallback(
     (tagName: string) => {

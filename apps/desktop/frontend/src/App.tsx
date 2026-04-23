@@ -1,6 +1,7 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react'
+import { lazy, memo, Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { Star } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
 import {
@@ -23,19 +24,37 @@ const NoteEditorPane = lazy(() =>
   import('@nicenote/app-shell').then((m) => ({ default: m.NoteEditorPane }))
 )
 
+const FavoriteButton = memo(function FavoriteButton({ path }: { path: string }) {
+  const isFavorite = useDesktopStore((s) => s.favorites.includes(path))
+  const toggleFavorite = useDesktopStore((s) => s.toggleFavorite)
+
+  return (
+    <button
+      onClick={(e) => {
+        e.stopPropagation()
+        toggleFavorite(path)
+      }}
+      aria-label={isFavorite ? '取消收藏' : '收藏'}
+      className="rounded p-1 text-muted-foreground/60 transition-colors hover:text-yellow-500"
+    >
+      <Star className={`h-3.5 w-3.5 ${isFavorite ? 'fill-yellow-400 text-yellow-400' : ''}`} />
+    </button>
+  )
+})
+
 function AppContent() {
   const { t } = useTranslation()
 
   const [shortcutsOpen, setShortcutsOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
   const closeShortcuts = useCallback(() => setShortcutsOpen(false), [])
 
-  const { sidebar } = useAppShell()
+  const { sidebar, tags, noteTagActions } = useAppShell()
 
-  const { searchOpen, setSearchOpen, createNote } = useDesktopStore(
+  const { createNote, saveState } = useDesktopStore(
     useShallow((s) => ({
-      searchOpen: s.searchOpen,
-      setSearchOpen: s.setSearchOpen,
       createNote: s.createNote,
+      saveState: s.saveState,
     }))
   )
 
@@ -54,6 +73,7 @@ function AppContent() {
   useGlobalShortcuts(shortcutActions)
 
   const handleShowShortcuts = useCallback(() => setShortcutsOpen(true), [])
+  const renderNoteActions = useCallback((noteId: string) => <FavoriteButton path={noteId} />, [])
 
   const gridColumns = sidebar.isOpen ? `${sidebar.width}px 1fr` : '48px 1fr'
 
@@ -65,7 +85,11 @@ function AppContent() {
         transition: 'grid-template-columns 300ms ease-in-out',
       }}
     >
-      <NotesSidebar onShowShortcuts={handleShowShortcuts} />
+      <NotesSidebar
+        isMobile={false}
+        onShowShortcuts={handleShowShortcuts}
+        renderNoteActions={renderNoteActions}
+      />
 
       <EditorErrorBoundary>
         <Suspense
@@ -75,7 +99,12 @@ function AppContent() {
             </div>
           }
         >
-          <NoteEditorPane />
+          <NoteEditorPane
+            isMobile={false}
+            saveState={saveState}
+            tags={tags}
+            noteTagActions={noteTagActions}
+          />
         </Suspense>
       </EditorErrorBoundary>
 

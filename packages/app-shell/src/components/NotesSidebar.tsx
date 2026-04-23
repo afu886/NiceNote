@@ -4,24 +4,28 @@ import { useTranslation } from 'react-i18next'
 import type { Locale } from 'date-fns'
 import { formatDistanceToNow } from 'date-fns'
 import { ChevronLeft, FileText, Search, SquarePen, Tag, Trash2, X } from 'lucide-react'
+import type { ReactNode } from 'react'
 
+import type { AppShellContextValue } from '../context'
 import { useAppShell } from '../context'
 import { useMinuteTicker } from '../hooks/useMinuteTicker'
 import { ICON_SM_CLASS, ROW_WITH_ICON_CLASS } from '../lib/class-names'
 import { getDateLocale } from '../lib/date-locale'
-import type { AppNoteItem } from '../types'
 
 import { SettingsDropdown } from './SettingsDropdown'
+
+type SidebarNote = AppShellContextValue['notes'][number]
 
 // ============================================================
 // 笔记列表项
 // ============================================================
 
 interface NoteListItemProps {
-  note: AppNoteItem
+  note: SidebarNote
   isActive: boolean
-  onSelect: (note: AppNoteItem) => void
+  onSelect: (note: SidebarNote) => void
   onDelete: (id: string) => void
+  renderActions?: ((noteId: string) => ReactNode) | undefined
   untitledLabel: string
   deleteLabel: string
   dateLocale: Locale
@@ -32,12 +36,12 @@ const NoteListItem = memo(function NoteListItem({
   isActive,
   onSelect,
   onDelete,
+  renderActions,
   untitledLabel,
   deleteLabel,
   dateLocale,
 }: NoteListItemProps) {
   useMinuteTicker()
-  const { noteListItemSlots } = useAppShell()
 
   return (
     <li
@@ -47,11 +51,6 @@ const NoteListItem = memo(function NoteListItem({
           ? 'bg-accent shadow-sm'
           : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground'
       }`}
-      onContextMenu={
-        noteListItemSlots?.onContextMenu
-          ? (e) => noteListItemSlots.onContextMenu!(note.id, e)
-          : undefined
-      }
     >
       <button
         onClick={() => onSelect(note)}
@@ -81,8 +80,8 @@ const NoteListItem = memo(function NoteListItem({
           isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 focus-visible:opacity-100'
         }`}
       >
-        {/* 平台扩展操作（如收藏星标） */}
-        {noteListItemSlots?.renderActions?.(note.id)}
+        {/* 调用方注入的列表项操作（如桌面端收藏星标） */}
+        {renderActions?.(note.id)}
         <button
           aria-label={deleteLabel.replace('{{title}}', note.title || untitledLabel)}
           onClick={(e) => {
@@ -108,9 +107,17 @@ interface NotesSidebarProps {
   onShowShortcuts?: () => void
   onExportAll?: () => void
   onImport?: () => void
+  renderNoteActions?: ((noteId: string) => ReactNode) | undefined
+  isMobile?: boolean
 }
 
-export function NotesSidebar({ onShowShortcuts, onExportAll, onImport }: NotesSidebarProps) {
+export function NotesSidebar({
+  onShowShortcuts,
+  onExportAll,
+  onImport,
+  renderNoteActions,
+  isMobile = false,
+}: NotesSidebarProps) {
   const { t, i18n } = useTranslation()
   const [search, setSearch] = useState('')
   const deferredSearch = useDeferredValue(search)
@@ -122,27 +129,16 @@ export function NotesSidebar({ onShowShortcuts, onExportAll, onImport }: NotesSi
   }, [showSearch])
 
   const [navView, setNavView] = useState<NavView>('notes')
-  const [selectedTagName, setSelectedTagName] = useState<string | null>(null)
+  const [tagFilterName, setTagFilterName] = useState<string | null>(null)
 
-  const {
-    notes,
-    selectedNoteId,
-    tags,
-    setSelectedTag,
-    sidebar,
-    selectNote,
-    createNote,
-    deleteNote,
-    isMobile,
-    extraNavItems,
-  } = useAppShell()
+  const { notes, selectedNoteId, tags, sidebar, selectNote, createNote, deleteNote } = useAppShell()
 
   const dateLocale = useMemo(() => getDateLocale(i18n.language), [i18n.language])
   const untitledLabel = t('sidebar.untitled')
   const deleteLabel = t('sidebar.deleteNote', { title: '{{title}}' })
 
   const handleSelectNote = useCallback(
-    (note: AppNoteItem) => {
+    (note: SidebarNote) => {
       selectNote(note.id)
       if (isMobile) sidebar.close()
     },
@@ -162,33 +158,28 @@ export function NotesSidebar({ onShowShortcuts, onExportAll, onImport }: NotesSi
   }, [createNote, isMobile, sidebar])
 
   // 点击标签：切换到笔记视图并按该标签过滤
-  const handleTagClick = useCallback(
-    (tagName: string) => {
-      setSelectedTagName(tagName)
-      setSelectedTag(tagName)
-      setNavView('notes')
-    },
-    [setSelectedTag]
-  )
+  const handleTagClick = useCallback((tagName: string) => {
+    setTagFilterName(tagName)
+    setNavView('notes')
+  }, [])
 
   // 切换到"所有笔记"：清除标签过滤
   const handleNavNotes = useCallback(() => {
     setNavView('notes')
-    setSelectedTagName(null)
-    setSelectedTag(null)
-  }, [setSelectedTag])
+    setTagFilterName(null)
+  }, [])
 
   const filteredNotes = useMemo(() => {
     let result = notes
-    if (selectedTagName) {
-      result = result.filter((note) => note.tags.includes(selectedTagName))
+    if (tagFilterName) {
+      result = result.filter((note) => note.tags.includes(tagFilterName))
     }
     const normalizedSearch = deferredSearch.toLowerCase()
     if (normalizedSearch) {
       result = result.filter((note) => note.title.toLowerCase().includes(normalizedSearch))
     }
     return result
-  }, [notes, deferredSearch, selectedTagName])
+  }, [notes, deferredSearch, tagFilterName])
 
   // 拖拽调整宽度
   const handleResizePointerDown = useCallback(
@@ -213,9 +204,7 @@ export function NotesSidebar({ onShowShortcuts, onExportAll, onImport }: NotesSi
     sidebar.stopResize()
   }, [sidebar])
 
-  const selectedTagObj = selectedTagName
-    ? (tags.find((tag) => tag.name === selectedTagName) ?? null)
-    : null
+  const activeTag = tagFilterName ? (tags.find((tag) => tag.name === tagFilterName) ?? null) : null
 
   // 左导航栏
   const leftNav = (
@@ -249,22 +238,6 @@ export function NotesSidebar({ onShowShortcuts, onExportAll, onImport }: NotesSi
           <Tag className={ICON_SM_CLASS} />
           <span className="text-center leading-tight">{t('nav.allTags')}</span>
         </button>
-
-        {/* 平台扩展导航项（如收藏、文件夹树） */}
-        {extraNavItems?.map((item) => (
-          <button
-            key={item.id}
-            onClick={item.onClick}
-            className={`flex shrink-0 flex-col items-center gap-1 rounded-md px-1 py-2.5 text-xs transition-colors ${
-              item.isActive
-                ? 'bg-accent text-foreground'
-                : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground'
-            }`}
-          >
-            {item.icon}
-            <span className="text-center leading-tight">{item.label}</span>
-          </button>
-        ))}
       </div>
 
       {/* 设置按钮（始终固定在底部） */}
@@ -312,17 +285,16 @@ export function NotesSidebar({ onShowShortcuts, onExportAll, onImport }: NotesSi
           </div>
         </div>
         {/* 标签过滤指示器 */}
-        {selectedTagObj && (
+        {activeTag && (
           <div className="px-2 pt-1.5 pb-1">
             <button
               onClick={() => {
-                setSelectedTagName(null)
-                setSelectedTag(null)
+                setTagFilterName(null)
               }}
               className="flex items-center gap-1 rounded-md bg-accent px-2 py-1 text-xs text-foreground transition-colors hover:bg-accent/70"
             >
               <Tag className="h-3 w-3" />
-              <span className="max-w-20 truncate">{selectedTagObj.name}</span>
+              <span className="max-w-20 truncate">{activeTag.name}</span>
               <X className="h-3 w-3 shrink-0" />
             </button>
           </div>
@@ -343,6 +315,7 @@ export function NotesSidebar({ onShowShortcuts, onExportAll, onImport }: NotesSi
             isActive={selectedNoteId === note.id}
             onSelect={handleSelectNote}
             onDelete={handleDeleteNote}
+            renderActions={renderNoteActions}
             untitledLabel={untitledLabel}
             deleteLabel={deleteLabel}
             dateLocale={dateLocale}

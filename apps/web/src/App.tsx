@@ -10,6 +10,7 @@ import {
   useAppShell,
   useGlobalShortcuts,
 } from '@nicenote/app-shell'
+import { useIsBreakpoint } from '@nicenote/ui'
 
 import { ImportDialog } from './components/ImportDialog'
 import { WebAppShellProvider } from './providers/AppShellProvider'
@@ -28,7 +29,8 @@ function AppContent() {
   const closeShortcuts = useCallback(() => setShortcutsOpen(false), [])
   const closeImport = useCallback(() => setImportOpen(false), [])
 
-  const { sidebar, isMobile } = useAppShell()
+  const isMobile = useIsBreakpoint('max', 768)
+  const { sidebar, tags, noteTagActions } = useAppShell()
 
   const shortcutActions = useMemo(
     () => ({
@@ -56,7 +58,11 @@ function AppContent() {
         transition: 'grid-template-columns 300ms ease-in-out',
       }}
     >
-      <NotesSidebar onShowShortcuts={handleShowShortcuts} onImport={handleImport} />
+      <NotesSidebar
+        isMobile={isMobile}
+        onShowShortcuts={handleShowShortcuts}
+        onImport={handleImport}
+      />
 
       <EditorErrorBoundary>
         <Suspense
@@ -66,7 +72,12 @@ function AppContent() {
             </div>
           }
         >
-          <NoteEditorPane inert={mobileOverlayOpen} />
+          <NoteEditorPane
+            inert={mobileOverlayOpen}
+            isMobile={isMobile}
+            tags={tags}
+            noteTagActions={noteTagActions}
+          />
         </Suspense>
       </EditorErrorBoundary>
 

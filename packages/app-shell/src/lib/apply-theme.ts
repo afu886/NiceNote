@@ -1,4 +1,4 @@
-import type { Theme } from '@nicenote/domain'
+import type { Theme } from '@nicenote/shared'
 
 /**
  * 将主题应用到 DOM（平台无关）

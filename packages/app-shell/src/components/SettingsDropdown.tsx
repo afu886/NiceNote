@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 import { Check, Keyboard, Languages, Monitor, Moon, Search, Settings, Sun } from 'lucide-react'
 
-import type { Language } from '@nicenote/domain'
+import type { Language } from '@nicenote/shared'
 import {
   DropdownMenu,
   DropdownMenuContent,

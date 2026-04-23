@@ -118,7 +118,7 @@ importers:
         version: 16.5.4(i18next@25.8.11(typescript@5.9.3))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
       zustand:
         specifier: ^5.0.10
-        version: 5.0.11(@types/react@19.2.10)(immer@10.2.0)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4))
+        version: 5.0.11(@types/react@19.2.10)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4))
     devDependencies:
       '@nicenote/tokens':
         specifier: workspace:*
@@ -150,36 +150,12 @@ importers:
 
   apps/mobile:
     dependencies:
-      '@nicenote/app-shell':
-        specifier: workspace:*
-        version: link:../../packages/app-shell
-      '@nicenote/database':
-        specifier: workspace:*
-        version: link:../../packages/database
-      '@nicenote/domain':
-        specifier: workspace:*
-        version: link:../../packages/domain
-      '@nicenote/editor-bridge':
-        specifier: workspace:*
-        version: link:../../packages/editor-bridge
-      '@nicenote/shared':
-        specifier: workspace:*
-        version: link:../../packages/shared
-      '@nicenote/ui-native':
-        specifier: workspace:*
-        version: link:../../packages/ui-native
       '@react-navigation/native':
         specifier: ^7.0.0
         version: 7.1.29(react-native@0.79.2(@babel/core@7.29.0)(@types/react@19.2.10)(react@19.0.0))(react@19.0.0)
       '@react-navigation/native-stack':
         specifier: ^7.0.0
         version: 7.14.0(@react-navigation/native@7.1.29(react-native@0.79.2(@babel/core@7.29.0)(@types/react@19.2.10)(react@19.0.0))(react@19.0.0))(react-native-safe-area-context@5.7.0(react-native@0.79.2(@babel/core@7.29.0)(@types/react@19.2.10)(react@19.0.0))(react@19.0.0))(react-native-screens@4.24.0(react-native@0.79.2(@babel/core@7.29.0)(@types/react@19.2.10)(react@19.0.0))(react@19.0.0))(react-native@0.79.2(@babel/core@7.29.0)(@types/react@19.2.10)(react@19.0.0))(react@19.0.0)
-      immer:
-        specifier: ^10.0.0
-        version: 10.2.0
-      nativewind:
-        specifier: ^4.2.2
-        version: 4.2.2(react-native-safe-area-context@5.7.0(react-native@0.79.2(@babel/core@7.29.0)(@types/react@19.2.10)(react@19.0.0))(react@19.0.0))(react-native@0.79.2(@babel/core@7.29.0)(@types/react@19.2.10)(react@19.0.0))(react@19.0.0)(tailwindcss@4.2.0)
       react:
         specifier: 19.0.0
         version: 19.0.0
@@ -192,9 +168,6 @@ importers:
       react-native-screens:
         specifier: ^4.0.0
         version: 4.24.0(react-native@0.79.2(@babel/core@7.29.0)(@types/react@19.2.10)(react@19.0.0))(react@19.0.0)
-      zustand:
-        specifier: ^5.0.0
-        version: 5.0.11(@types/react@19.2.10)(immer@10.2.0)(react@19.0.0)(use-sync-external-store@1.6.0(react@19.0.0))
     devDependencies:
       '@react-native/babel-preset':
         specifier: 0.79.0
@@ -252,7 +225,7 @@ importers:
         version: 16.5.4(i18next@25.8.11(typescript@5.9.3))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
       zustand:
         specifier: ^5.0.10
-        version: 5.0.11(@types/react@19.2.10)(immer@10.2.0)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4))
+        version: 5.0.11(@types/react@19.2.10)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4))
     devDependencies:
       '@nicenote/tokens':
         specifier: workspace:*
@@ -332,7 +305,7 @@ importers:
         version: 3.2.4(@types/node@20.19.33)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
       zustand:
         specifier: ^5.0.10
-        version: 5.0.11(@types/react@19.2.10)(immer@10.2.0)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4))
+        version: 5.0.11(@types/react@19.2.10)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4))
 
   packages/database:
     dependencies:
@@ -2385,9 +2358,6 @@ packages:
     resolution: {integrity: sha512-FmeCCAenzH0KH381SPT5FZmiA/TmpndpcaShhfgEN9eCVjnFBqq3l1xrI42y8+PPLI6hypzou4GXw00WHmPBLQ==}
     engines: {node: '>= 0.4'}
 
-  array-timsort@1.0.3:
-    resolution: {integrity: sha512-/+3GRL7dDAGEfM6TseQk/U+mi18TU2Ms9I3UlLdUMhz2hbvGNTKdj9xniwXfUqgYhHxRx0+8UnKkvlNwVU+cWQ==}
-
   array.prototype.findlast@1.2.5:
     resolution: {integrity: sha512-CVvd6FHg1Z3POpBLxO6E6zr+rSKEQ9L6rZHAaY7lLfhKsWYUBBOuMs0e9o24oopj6H+geRCX0YJ+TJLBK2eHyQ==}
     engines: {node: '>= 0.4'}
@@ -2646,10 +2616,6 @@ packages:
     resolution: {integrity: sha512-QrWXB+ZQSVPmIWIhtEO9H+gwHaMGYiF5ChvoJ+K9ZGHG/sVsa6yiesAD1GC/x46sET00Xlwo1u49RVVVzvcSkw==}
     engines: {node: '>= 10'}
 
-  comment-json@4.5.1:
-    resolution: {integrity: sha512-taEtr3ozUmOB7it68Jll7s0Pwm+aoiHyXKrEC8SEodL4rNpdfDLqa7PfBlrgFoCNNdR8ImL+muti5IGvktJAAg==}
-    engines: {node: '>= 6'}
-
   commondir@1.0.1:
     resolution: {integrity: sha512-W9pAhw0ja1Edb5GVdIF1mjZw/ASI0AlShXM83UUGe2DVr5TdAPEA1OA8m/g8zWp9x6On7gqufY+FatDbC3MDQg==}
 
@@ -2759,11 +2725,6 @@ packages:
   destroy@1.2.0:
     resolution: {integrity: sha512-2sJGJTaXIIaR1w4iJSNoN0hnMY7Gpc/n8D4qSCJw8QqFWXf7cuAgnEHxBpweaVcPevC2l3KpjYCx3NypQQgaJg==}
     engines: {node: '>= 0.8', npm: 1.2.8000 || >= 1.4.16}
-
-  detect-libc@1.0.3:
-    resolution: {integrity: sha512-pGjwhsmsp4kL2RTz08wcOlGN83otlqHeD/Z5T8GXZB+/YcpQ/dgo+lbU8ZsGxV0HIvqqxo9l7mqYwyYMD9bKDg==}
-    engines: {node: '>=0.10'}
-    hasBin: true
 
   detect-libc@2.1.2:
     resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
@@ -3421,9 +3382,6 @@ packages:
   immediate@3.0.6:
     resolution: {integrity: sha512-XXOFtyqDjNDAQxVfYxuF7g9Il/IbWmmlQg2MYKOH8ExIT1qg6xc4zyS3HaEEATgs1btfzxq15ciUiY7gjSXRGQ==}
 
-  immer@10.2.0:
-    resolution: {integrity: sha512-d/+XTN3zfODyjr89gM3mPq1WNX2B8pYsu7eORitdwyA2sBubnTl3laYlBk4sXY5FUa5qTZGBDPJICVbvqzjlbw==}
-
   import-fresh@2.0.0:
     resolution: {integrity: sha512-eZ5H8rcgYazHbKC3PG4ClHNykCSxtAhxSSEM+2mb+7evD2CKF5V7c0dNum7AdpDh0ZdICwZY9sRSn8f+KH96sg==}
     engines: {node: '>=4'}
@@ -3751,22 +3709,10 @@ packages:
     cpu: [arm64]
     os: [android]
 
-  lightningcss-darwin-arm64@1.27.0:
-    resolution: {integrity: sha512-Gl/lqIXY+d+ySmMbgDf0pgaWSqrWYxVHoc88q+Vhf2YNzZ8DwoRzGt5NZDVqqIW5ScpSnmmjcgXP87Dn2ylSSQ==}
-    engines: {node: '>= 12.0.0'}
-    cpu: [arm64]
-    os: [darwin]
-
   lightningcss-darwin-arm64@1.31.1:
     resolution: {integrity: sha512-02uTEqf3vIfNMq3h/z2cJfcOXnQ0GRwQrkmPafhueLb2h7mqEidiCzkE4gBMEH65abHRiQvhdcQ+aP0D0g67sg==}
     engines: {node: '>= 12.0.0'}
     cpu: [arm64]
-    os: [darwin]
-
-  lightningcss-darwin-x64@1.27.0:
-    resolution: {integrity: sha512-0+mZa54IlcNAoQS9E0+niovhyjjQWEMrwW0p2sSdLRhLDc8LMQ/b67z7+B5q4VmjYCMSfnFi3djAAQFIDuj/Tg==}
-    engines: {node: '>= 12.0.0'}
-    cpu: [x64]
     os: [darwin]
 
   lightningcss-darwin-x64@1.31.1:
@@ -3775,36 +3721,17 @@ packages:
     cpu: [x64]
     os: [darwin]
 
-  lightningcss-freebsd-x64@1.27.0:
-    resolution: {integrity: sha512-n1sEf85fePoU2aDN2PzYjoI8gbBqnmLGEhKq7q0DKLj0UTVmOTwDC7PtLcy/zFxzASTSBlVQYJUhwIStQMIpRA==}
-    engines: {node: '>= 12.0.0'}
-    cpu: [x64]
-    os: [freebsd]
-
   lightningcss-freebsd-x64@1.31.1:
     resolution: {integrity: sha512-1RINmQKAItO6ISxYgPwszQE1BrsVU5aB45ho6O42mu96UiZBxEXsuQ7cJW4zs4CEodPUioj/QrXW1r9pLUM74A==}
     engines: {node: '>= 12.0.0'}
     cpu: [x64]
     os: [freebsd]
 
-  lightningcss-linux-arm-gnueabihf@1.27.0:
-    resolution: {integrity: sha512-MUMRmtdRkOkd5z3h986HOuNBD1c2lq2BSQA1Jg88d9I7bmPGx08bwGcnB75dvr17CwxjxD6XPi3Qh8ArmKFqCA==}
-    engines: {node: '>= 12.0.0'}
-    cpu: [arm]
-    os: [linux]
-
   lightningcss-linux-arm-gnueabihf@1.31.1:
     resolution: {integrity: sha512-OOCm2//MZJ87CdDK62rZIu+aw9gBv4azMJuA8/KB74wmfS3lnC4yoPHm0uXZ/dvNNHmnZnB8XLAZzObeG0nS1g==}
     engines: {node: '>= 12.0.0'}
     cpu: [arm]
     os: [linux]
-
-  lightningcss-linux-arm64-gnu@1.27.0:
-    resolution: {integrity: sha512-cPsxo1QEWq2sfKkSq2Bq5feQDHdUEwgtA9KaB27J5AX22+l4l0ptgjMZZtYtUnteBofjee+0oW1wQ1guv04a7A==}
-    engines: {node: '>= 12.0.0'}
-    cpu: [arm64]
-    os: [linux]
-    libc: [glibc]
 
   lightningcss-linux-arm64-gnu@1.31.1:
     resolution: {integrity: sha512-WKyLWztD71rTnou4xAD5kQT+982wvca7E6QoLpoawZ1gP9JM0GJj4Tp5jMUh9B3AitHbRZ2/H3W5xQmdEOUlLg==}
@@ -3813,26 +3740,12 @@ packages:
     os: [linux]
     libc: [glibc]
 
-  lightningcss-linux-arm64-musl@1.27.0:
-    resolution: {integrity: sha512-rCGBm2ax7kQ9pBSeITfCW9XSVF69VX+fm5DIpvDZQl4NnQoMQyRwhZQm9pd59m8leZ1IesRqWk2v/DntMo26lg==}
-    engines: {node: '>= 12.0.0'}
-    cpu: [arm64]
-    os: [linux]
-    libc: [musl]
-
   lightningcss-linux-arm64-musl@1.31.1:
     resolution: {integrity: sha512-mVZ7Pg2zIbe3XlNbZJdjs86YViQFoJSpc41CbVmKBPiGmC4YrfeOyz65ms2qpAobVd7WQsbW4PdsSJEMymyIMg==}
     engines: {node: '>= 12.0.0'}
     cpu: [arm64]
     os: [linux]
     libc: [musl]
-
-  lightningcss-linux-x64-gnu@1.27.0:
-    resolution: {integrity: sha512-Dk/jovSI7qqhJDiUibvaikNKI2x6kWPN79AQiD/E/KeQWMjdGe9kw51RAgoWFDi0coP4jinaH14Nrt/J8z3U4A==}
-    engines: {node: '>= 12.0.0'}
-    cpu: [x64]
-    os: [linux]
-    libc: [glibc]
 
   lightningcss-linux-x64-gnu@1.31.1:
     resolution: {integrity: sha512-xGlFWRMl+0KvUhgySdIaReQdB4FNudfUTARn7q0hh/V67PVGCs3ADFjw+6++kG1RNd0zdGRlEKa+T13/tQjPMA==}
@@ -3841,13 +3754,6 @@ packages:
     os: [linux]
     libc: [glibc]
 
-  lightningcss-linux-x64-musl@1.27.0:
-    resolution: {integrity: sha512-QKjTxXm8A9s6v9Tg3Fk0gscCQA1t/HMoF7Woy1u68wCk5kS4fR+q3vXa1p3++REW784cRAtkYKrPy6JKibrEZA==}
-    engines: {node: '>= 12.0.0'}
-    cpu: [x64]
-    os: [linux]
-    libc: [musl]
-
   lightningcss-linux-x64-musl@1.31.1:
     resolution: {integrity: sha512-eowF8PrKHw9LpoZii5tdZwnBcYDxRw2rRCyvAXLi34iyeYfqCQNA9rmUM0ce62NlPhCvof1+9ivRaTY6pSKDaA==}
     engines: {node: '>= 12.0.0'}
@@ -3855,22 +3761,10 @@ packages:
     os: [linux]
     libc: [musl]
 
-  lightningcss-win32-arm64-msvc@1.27.0:
-    resolution: {integrity: sha512-/wXegPS1hnhkeG4OXQKEMQeJd48RDC3qdh+OA8pCuOPCyvnm/yEayrJdJVqzBsqpy1aJklRCVxscpFur80o6iQ==}
-    engines: {node: '>= 12.0.0'}
-    cpu: [arm64]
-    os: [win32]
-
   lightningcss-win32-arm64-msvc@1.31.1:
     resolution: {integrity: sha512-aJReEbSEQzx1uBlQizAOBSjcmr9dCdL3XuC/6HLXAxmtErsj2ICo5yYggg1qOODQMtnjNQv2UHb9NpOuFtYe4w==}
     engines: {node: '>= 12.0.0'}
     cpu: [arm64]
-    os: [win32]
-
-  lightningcss-win32-x64-msvc@1.27.0:
-    resolution: {integrity: sha512-/OJLj94Zm/waZShL8nB5jsNj3CfNATLCTyFxZyouilfTmSoLDX7VlVAmhPHoZWVFp4vdmoiEbPEYC8HID3m6yw==}
-    engines: {node: '>= 12.0.0'}
-    cpu: [x64]
     os: [win32]
 
   lightningcss-win32-x64-msvc@1.31.1:
@@ -3878,10 +3772,6 @@ packages:
     engines: {node: '>= 12.0.0'}
     cpu: [x64]
     os: [win32]
-
-  lightningcss@1.27.0:
-    resolution: {integrity: sha512-8f7aNmS1+etYSLHht0fQApPc2kNO8qGRutifN5rVIc6Xo6ABsEbqOr758UwI7ALVbTt4x1fllKt0PYgzD9S3yQ==}
-    engines: {node: '>= 12.0.0'}
 
   lightningcss@1.31.1:
     resolution: {integrity: sha512-l51N2r93WmGUye3WuFoN5k10zyvrVs0qfKBhyC5ogUQ6Ew6JUSswh78mbSO+IU3nTWsyOArqPCcShdQSadghBQ==}
@@ -4193,12 +4083,6 @@ packages:
     resolution: {integrity: sha512-c7+7RQ+dMB5dPwwCp4ee1/iV/q2P6aK1mTZcfr1BTuVlyW9hJYiMPybJCcnBlQtuSmTIWNeazm/zqNoZSSElBg==}
     engines: {node: ^18 || >=20}
     hasBin: true
-
-  nativewind@4.2.2:
-    resolution: {integrity: sha512-kUGbUamKUWdnAIjfBuhIrtDHFtMyL1pEE3AEbCuKeg656pHuB0KtJRk6Lrie/+8haj8hCSlwOleQFJLrE1sZgA==}
-    engines: {node: '>=16'}
-    peerDependencies:
-      tailwindcss: '>3.3.0'
 
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
@@ -4573,22 +4457,6 @@ packages:
 
   react-is@19.2.4:
     resolution: {integrity: sha512-W+EWGn2v0ApPKgKKCy/7s7WHXkboGcsrXE+2joLyVxkbyVQfO3MUEaUQDHoSmb8TFFrSKYa9mw64WZHNHSDzYA==}
-
-  react-native-css-interop@0.2.2:
-    resolution: {integrity: sha512-2eUyl7RH1RT6TYbe5nm+d4HZ2Pr6Nmve158B57tb5W4Bo52Xzp+PFeWAdFnAr2HNB+r9b6qa8o3xH1YREVQU0g==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      react: '>=18'
-      react-native: '*'
-      react-native-reanimated: '>=3.6.2'
-      react-native-safe-area-context: '*'
-      react-native-svg: '*'
-      tailwindcss: ~3
-    peerDependenciesMeta:
-      react-native-safe-area-context:
-        optional: true
-      react-native-svg:
-        optional: true
 
   react-native-safe-area-context@5.7.0:
     resolution: {integrity: sha512-/9/MtQz8ODphjsLdZ+GZAIcC/RtoqW9EeShf7Uvnfgm/pzYrJ75y3PV/J1wuAV1T5Dye5ygq4EAW20RoBq0ABQ==}
@@ -7513,8 +7381,6 @@ snapshots:
       is-string: 1.1.1
       math-intrinsics: 1.1.0
 
-  array-timsort@1.0.3: {}
-
   array.prototype.findlast@1.2.5:
     dependencies:
       call-bind: 1.0.8
@@ -7836,12 +7702,6 @@ snapshots:
 
   commander@7.2.0: {}
 
-  comment-json@4.5.1:
-    dependencies:
-      array-timsort: 1.0.3
-      core-util-is: 1.0.3
-      esprima: 4.0.1
-
   commondir@1.0.1: {}
 
   concat-map@0.0.1: {}
@@ -7948,8 +7808,6 @@ snapshots:
       - supports-color
 
   destroy@1.2.0: {}
-
-  detect-libc@1.0.3: {}
 
   detect-libc@2.1.2: {}
 
@@ -8635,8 +8493,6 @@ snapshots:
 
   immediate@3.0.6: {}
 
-  immer@10.2.0: {}
-
   import-fresh@2.0.0:
     dependencies:
       caller-path: 2.0.0
@@ -9000,80 +8856,35 @@ snapshots:
   lightningcss-android-arm64@1.31.1:
     optional: true
 
-  lightningcss-darwin-arm64@1.27.0:
-    optional: true
-
   lightningcss-darwin-arm64@1.31.1:
-    optional: true
-
-  lightningcss-darwin-x64@1.27.0:
     optional: true
 
   lightningcss-darwin-x64@1.31.1:
     optional: true
 
-  lightningcss-freebsd-x64@1.27.0:
-    optional: true
-
   lightningcss-freebsd-x64@1.31.1:
-    optional: true
-
-  lightningcss-linux-arm-gnueabihf@1.27.0:
     optional: true
 
   lightningcss-linux-arm-gnueabihf@1.31.1:
     optional: true
 
-  lightningcss-linux-arm64-gnu@1.27.0:
-    optional: true
-
   lightningcss-linux-arm64-gnu@1.31.1:
-    optional: true
-
-  lightningcss-linux-arm64-musl@1.27.0:
     optional: true
 
   lightningcss-linux-arm64-musl@1.31.1:
     optional: true
 
-  lightningcss-linux-x64-gnu@1.27.0:
-    optional: true
-
   lightningcss-linux-x64-gnu@1.31.1:
-    optional: true
-
-  lightningcss-linux-x64-musl@1.27.0:
     optional: true
 
   lightningcss-linux-x64-musl@1.31.1:
     optional: true
 
-  lightningcss-win32-arm64-msvc@1.27.0:
-    optional: true
-
   lightningcss-win32-arm64-msvc@1.31.1:
-    optional: true
-
-  lightningcss-win32-x64-msvc@1.27.0:
     optional: true
 
   lightningcss-win32-x64-msvc@1.31.1:
     optional: true
-
-  lightningcss@1.27.0:
-    dependencies:
-      detect-libc: 1.0.3
-    optionalDependencies:
-      lightningcss-darwin-arm64: 1.27.0
-      lightningcss-darwin-x64: 1.27.0
-      lightningcss-freebsd-x64: 1.27.0
-      lightningcss-linux-arm-gnueabihf: 1.27.0
-      lightningcss-linux-arm64-gnu: 1.27.0
-      lightningcss-linux-arm64-musl: 1.27.0
-      lightningcss-linux-x64-gnu: 1.27.0
-      lightningcss-linux-x64-musl: 1.27.0
-      lightningcss-win32-arm64-msvc: 1.27.0
-      lightningcss-win32-x64-msvc: 1.27.0
 
   lightningcss@1.31.1:
     dependencies:
@@ -9631,20 +9442,6 @@ snapshots:
 
   nanoid@5.1.6: {}
 
-  nativewind@4.2.2(react-native-safe-area-context@5.7.0(react-native@0.79.2(@babel/core@7.29.0)(@types/react@19.2.10)(react@19.0.0))(react@19.0.0))(react-native@0.79.2(@babel/core@7.29.0)(@types/react@19.2.10)(react@19.0.0))(react@19.0.0)(tailwindcss@4.2.0):
-    dependencies:
-      comment-json: 4.5.1
-      debug: 4.4.3
-      react-native-css-interop: 0.2.2(react-native-safe-area-context@5.7.0(react-native@0.79.2(@babel/core@7.29.0)(@types/react@19.2.10)(react@19.0.0))(react@19.0.0))(react-native@0.79.2(@babel/core@7.29.0)(@types/react@19.2.10)(react@19.0.0))(react@19.0.0)(tailwindcss@4.2.0)
-      tailwindcss: 4.2.0
-    transitivePeerDependencies:
-      - react
-      - react-native
-      - react-native-reanimated
-      - react-native-safe-area-context
-      - react-native-svg
-      - supports-color
-
   natural-compare@1.4.0: {}
 
   negotiator@0.6.3: {}
@@ -10066,22 +9863,6 @@ snapshots:
   react-is@18.3.1: {}
 
   react-is@19.2.4: {}
-
-  react-native-css-interop@0.2.2(react-native-safe-area-context@5.7.0(react-native@0.79.2(@babel/core@7.29.0)(@types/react@19.2.10)(react@19.0.0))(react@19.0.0))(react-native@0.79.2(@babel/core@7.29.0)(@types/react@19.2.10)(react@19.0.0))(react@19.0.0)(tailwindcss@4.2.0):
-    dependencies:
-      '@babel/helper-module-imports': 7.28.6
-      '@babel/traverse': 7.29.0
-      '@babel/types': 7.29.0
-      debug: 4.4.3
-      lightningcss: 1.27.0
-      react: 19.0.0
-      react-native: 0.79.2(@babel/core@7.29.0)(@types/react@19.2.10)(react@19.0.0)
-      semver: 7.7.3
-      tailwindcss: 4.2.0
-    optionalDependencies:
-      react-native-safe-area-context: 5.7.0(react-native@0.79.2(@babel/core@7.29.0)(@types/react@19.2.10)(react@19.0.0))(react@19.0.0)
-    transitivePeerDependencies:
-      - supports-color
 
   react-native-safe-area-context@5.7.0(react-native@0.79.2(@babel/core@7.29.0)(@types/react@19.2.10)(react@19.0.0))(react@19.0.0):
     dependencies:
@@ -11073,16 +10854,8 @@ snapshots:
 
   zod@4.3.6: {}
 
-  zustand@5.0.11(@types/react@19.2.10)(immer@10.2.0)(react@19.0.0)(use-sync-external-store@1.6.0(react@19.0.0)):
+  zustand@5.0.11(@types/react@19.2.10)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4)):
     optionalDependencies:
       '@types/react': 19.2.10
-      immer: 10.2.0
-      react: 19.0.0
-      use-sync-external-store: 1.6.0(react@19.0.0)
-
-  zustand@5.0.11(@types/react@19.2.10)(immer@10.2.0)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4)):
-    optionalDependencies:
-      '@types/react': 19.2.10
-      immer: 10.2.0
       react: 19.2.4
       use-sync-external-store: 1.6.0(react@19.2.4)

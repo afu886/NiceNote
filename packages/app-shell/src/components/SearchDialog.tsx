@@ -5,10 +5,12 @@ import { FileText } from 'lucide-react'
 
 import { SearchDialogPrimitive } from '@nicenote/ui'
 
+import type { AppShellContextValue } from '../context'
 import { useAppShell } from '../context'
-import type { AppSearchResult } from '../types'
 
 import { HighlightSnippet } from './HighlightSnippet'
+
+type SearchDialogResult = Awaited<ReturnType<AppShellContextValue['searchNotes']>>[number]
 
 interface SearchDialogProps {
   open: boolean
@@ -22,7 +24,7 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
   const handleSearch = useCallback((query: string) => searchNotes(query), [searchNotes])
 
   const handleSelect = useCallback(
-    (result: AppSearchResult) => {
+    (result: SearchDialogResult) => {
       selectNote(result.id)
     },
     [selectNote]
@@ -41,7 +43,7 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
   )
 
   const renderResult = useCallback(
-    (result: AppSearchResult, { query, isSelected }: { query: string; isSelected: boolean }) => (
+    (result: SearchDialogResult, { query, isSelected }: { query: string; isSelected: boolean }) => (
       <>
         <FileText
           className={`mt-0.5 size-4 shrink-0 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`}
@@ -62,7 +64,7 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
   )
 
   return (
-    <SearchDialogPrimitive<AppSearchResult>
+    <SearchDialogPrimitive<SearchDialogResult>
       open={open}
       onClose={onClose}
       onSearch={handleSearch}

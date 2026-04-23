@@ -1,9 +1,12 @@
 import { create } from 'zustand'
 
-import type { NoteListItem, NoteSearchResult, NoteSelect, TagSelect } from '@nicenote/shared'
+import type { NoteSearchResult, NoteSelect, TagSelect } from '@nicenote/shared'
 import { extractSnippet, generateSummary } from '@nicenote/shared'
 
-import { LocalStorageNoteRepository } from '../adapters/local-storage-note-repository'
+import {
+  loadStoredNotes,
+  LocalStorageNoteRepository,
+} from '../adapters/local-storage-note-repository'
 
 // ============================================================
 // Repository 实例（通过 domain 层接口访问数据）
@@ -44,18 +47,6 @@ function saveNoteTags(noteTags: Record<string, string[]>) {
   localStorage.setItem(NOTE_TAGS_STORAGE_KEY, JSON.stringify(noteTags))
 }
 
-function toListItem(note: NoteSelect): NoteListItem {
-  return {
-    id: note.id,
-    title: note.title,
-    summary: generateSummary(note.content ?? '') || null,
-    folderId: note.folderId,
-    createdAt: note.createdAt,
-    updatedAt: note.updatedAt,
-    tags: [],
-  }
-}
-
 interface NoteStore {
   notes: NoteSelect[]
   selectedNoteId: string | null
@@ -84,10 +75,8 @@ export const useNoteStore = create<NoteStore>((set, get) => ({
   loadNotes: async () => {
     set({ isLoading: true })
     try {
-      const result = await repo.list({ limit: 100 })
-      // list 返回 NoteListItem（无 content），并行获取完整 NoteSelect
-      const fetched = await Promise.all(result.data.map((item) => repo.get(item.id)))
-      const notes = fetched.filter((n): n is NoteSelect => n !== null)
+      // Web 端直接读取完整笔记，避免 list + get 的 N+1 加载。
+      const notes = loadStoredNotes()
       set({ notes, isLoading: false })
     } catch {
       set({ isLoading: false })
@@ -202,6 +191,3 @@ export const useNoteStore = create<NoteStore>((set, get) => ({
 
 // 启动时加载笔记
 useNoteStore.getState().loadNotes()
-
-// 供组件使用的 selector
-export const selectNoteList = (notes: NoteSelect[]): NoteListItem[] => notes.map(toListItem)

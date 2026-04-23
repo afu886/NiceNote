@@ -1,17 +1,13 @@
 import React from 'react'
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native'
 
-// TODO: Integrate @nicenote/editor-bridge for rich text editing via WebView
-// TODO: Load note content from @nicenote/database
-// TODO: Auto-save with debounce via ../store
-// TODO: Add toolbar for formatting actions
+// experimental：当前仅保留占位编辑页，不接入 editor bridge、数据层或保存链路。
 
 export function NoteEditorScreen(): React.JSX.Element {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.placeholder}>Editor will be rendered here via WebView bridge</Text>
-        {/* TODO: Replace with <EditorWebView /> from @nicenote/editor-bridge */}
       </View>
     </SafeAreaView>
   )

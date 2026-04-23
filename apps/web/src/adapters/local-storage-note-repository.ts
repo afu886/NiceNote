@@ -1,4 +1,3 @@
-import type { NoteRepository } from '@nicenote/domain'
 import type {
   NoteCreateInput,
   NoteListQuery,
@@ -25,19 +24,22 @@ function saveAll(notes: NoteSelect[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(notes))
 }
 
+export function loadStoredNotes(): NoteSelect[] {
+  const notes = loadAll()
+  notes.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+  return notes
+}
+
 /**
- * 基于 localStorage 的 NoteRepository 实现（Web 端）
+ * 基于 localStorage 的 Web 笔记存储实现
  */
-export class LocalStorageNoteRepository implements NoteRepository {
+export class LocalStorageNoteRepository {
   async list(query: NoteListQuery): Promise<NoteListResult> {
-    let notes = loadAll()
+    let notes = loadStoredNotes()
 
     if (query.folderId) {
       notes = notes.filter((n) => n.folderId === query.folderId)
     }
-
-    // 按更新时间倒序
-    notes.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
 
     // 游标分页
     if (query.cursor && query.cursorId) {

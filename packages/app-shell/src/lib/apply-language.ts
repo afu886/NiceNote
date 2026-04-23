@@ -1,4 +1,4 @@
-import type { Language } from '@nicenote/domain'
+import type { Language } from '@nicenote/shared'
 
 import i18n from '../i18n'
 

@@ -2,17 +2,9 @@ import { useCallback, useMemo } from 'react'
 
 import { useShallow } from 'zustand/react/shallow'
 
-import type {
-  AppNoteDetail,
-  AppNoteItem,
-  AppSearchResult,
-  AppShellContextValue,
-  AppTagInfo,
-} from '@nicenote/app-shell'
+import type { AppShellContextValue, AppTagInfo } from '@nicenote/app-shell'
 import { AppShellContext } from '@nicenote/app-shell'
-import type { NoteSelect } from '@nicenote/shared'
 import { generateSummary } from '@nicenote/shared'
-import { useIsBreakpoint } from '@nicenote/ui'
 
 import { useNoteStore } from '../store/useNoteStore'
 import { useSettingsStore } from '../store/useSettingsStore'
@@ -20,44 +12,10 @@ import { useSidebarStore } from '../store/useSidebarStore'
 import { useToastStore } from '../store/useToastStore'
 
 // ============================================================
-// 数据模型转换
-// ============================================================
-
-function noteToAppItem(
-  note: NoteSelect,
-  noteTags: Record<string, string[]>,
-  tagMap: Map<string, string>
-): AppNoteItem {
-  const tagIds = noteTags[note.id] ?? []
-  const tagNames = tagIds.map((id) => tagMap.get(id)).filter(Boolean) as string[]
-  return {
-    id: note.id,
-    title: note.title,
-    summary: generateSummary(note.content ?? '') || null,
-    tags: tagNames,
-    updatedAt: note.updatedAt,
-    createdAt: note.createdAt,
-  }
-}
-
-function noteToAppDetail(
-  note: NoteSelect,
-  noteTags: Record<string, string[]>,
-  tagMap: Map<string, string>
-): AppNoteDetail {
-  return {
-    ...noteToAppItem(note, noteTags, tagMap),
-    content: note.content,
-  }
-}
-
-// ============================================================
 // Provider
 // ============================================================
 
 export function WebAppShellProvider({ children }: { children: React.ReactNode }) {
-  const isMobile = useIsBreakpoint('max', 768)
-
   // Note store
   const {
     notes,
@@ -107,19 +65,42 @@ export function WebAppShellProvider({ children }: { children: React.ReactNode })
     return { tagMap: idToName, tagNameToId: nameToId }
   }, [rawTags])
 
-  // 转换笔记为 AppNoteItem[]
-  const appNotes = useMemo(
-    () => notes.map((n) => noteToAppItem(n, noteTags, tagMap)),
-    [notes, noteTags, tagMap]
+  const getTagNames = useCallback(
+    (noteId: string) => {
+      const tagNames: string[] = []
+      for (const tagId of noteTags[noteId] ?? []) {
+        const tagName = tagMap.get(tagId)
+        if (tagName) tagNames.push(tagName)
+      }
+      return tagNames
+    },
+    [noteTags, tagMap]
   )
 
-  // 当前笔记
-  const currentNote = useMemo(() => {
+  const appNotes = useMemo<AppShellContextValue['notes']>(
+    () =>
+      notes.map((note) => ({
+        id: note.id,
+        title: note.title,
+        summary: generateSummary(note.content ?? '') || null,
+        tags: getTagNames(note.id),
+        updatedAt: note.updatedAt,
+      })),
+    [notes, getTagNames]
+  )
+
+  const currentNote = useMemo<AppShellContextValue['currentNote']>(() => {
     if (!selectedNoteId) return null
-    const note = notes.find((n) => n.id === selectedNoteId)
+    const note = notes.find((item) => item.id === selectedNoteId)
     if (!note) return null
-    return noteToAppDetail(note, noteTags, tagMap)
-  }, [notes, selectedNoteId, noteTags, tagMap])
+    return {
+      id: note.id,
+      title: note.title,
+      content: note.content,
+      tags: getTagNames(note.id),
+      updatedAt: note.updatedAt,
+    }
+  }, [notes, selectedNoteId, getTagNames])
 
   // 标签信息
   const appTags: AppTagInfo[] = useMemo(() => {
@@ -158,17 +139,13 @@ export function WebAppShellProvider({ children }: { children: React.ReactNode })
   )
 
   // 搜索——web 的 search 是同步的，包装成 async
-  const searchNotes = useCallback(
-    async (query: string): Promise<AppSearchResult[]> => {
+  const searchNotes = useCallback<AppShellContextValue['searchNotes']>(
+    async (query) => {
       const results = search(query)
-      return results.map((r) => ({
-        id: r.id,
-        title: r.title,
-        summary: r.summary,
-        tags: [],
-        updatedAt: r.updatedAt,
-        createdAt: r.createdAt,
-        snippet: r.snippet,
+      return results.map((result) => ({
+        id: result.id,
+        title: result.title,
+        snippet: result.snippet,
       }))
     },
     [search]
@@ -199,8 +176,6 @@ export function WebAppShellProvider({ children }: { children: React.ReactNode })
       updateNote: handleUpdateNote,
       sidebar,
       tags: appTags,
-      selectedTag: null,
-      setSelectedTag: () => {},
       noteTagActions,
       theme,
       setTheme,
@@ -210,7 +185,6 @@ export function WebAppShellProvider({ children }: { children: React.ReactNode })
       addToast,
       removeToast,
       searchNotes,
-      isMobile,
     }),
     [
       appNotes,
@@ -232,7 +206,6 @@ export function WebAppShellProvider({ children }: { children: React.ReactNode })
       addToast,
       removeToast,
       searchNotes,
-      isMobile,
     ]
   )
 

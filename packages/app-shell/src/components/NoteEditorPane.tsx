@@ -11,19 +11,31 @@ import { useAppShell } from '../context'
 import { useMinuteTicker } from '../hooks/useMinuteTicker'
 import { ICON_SM_CLASS } from '../lib/class-names'
 import { getDateLocale } from '../lib/date-locale'
+import type { AppTagInfo, NoteTagActions } from '../types'
 
+import type { SaveState } from './SaveStateIndicator'
 import { SaveStateIndicator } from './SaveStateIndicator'
 import { TagInput } from './TagInput'
 
 interface NoteEditorPaneProps {
   inert?: boolean
+  isMobile?: boolean
+  saveState?: SaveState
+  tags: AppTagInfo[]
+  noteTagActions: NoteTagActions
 }
 
-export function NoteEditorPane({ inert }: NoteEditorPaneProps) {
+export function NoteEditorPane({
+  inert,
+  isMobile = false,
+  saveState,
+  tags,
+  noteTagActions,
+}: NoteEditorPaneProps) {
   const { t, i18n } = useTranslation()
   useMinuteTicker()
 
-  const { currentNote, createNote, updateNote, isMobile, saveState } = useAppShell()
+  const { currentNote, createNote, updateNote } = useAppShell()
 
   const editorLabels: EditorLabels = useMemo(
     () => ({
@@ -112,7 +124,12 @@ export function NoteEditorPane({ inert }: NoteEditorPaneProps) {
               {saveState && <SaveStateIndicator state={saveState} labels={saveStatusLabels} />}
             </div>
             <div className="mt-3">
-              <TagInput noteId={currentNote.id} noteTags={currentNote.tags} />
+              <TagInput
+                noteId={currentNote.id}
+                noteTags={currentNote.tags}
+                availableTags={tags}
+                noteTagActions={noteTagActions}
+              />
             </div>
           </div>
           <div className="flex-1 overflow-hidden px-8 pb-8">
