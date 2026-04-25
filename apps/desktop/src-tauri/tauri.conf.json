@@ -5,8 +5,8 @@
   "build": {
     "frontendDist": "../frontend/dist",
     "devUrl": "http://localhost:5173",
-    "beforeDevCommand": "pnpm dev:frontend",
-    "beforeBuildCommand": "pnpm build:frontend"
+    "beforeDevCommand": "pnpm --filter @nicenote/tokens build && pnpm --filter @nicenote/desktop exec vite",
+    "beforeBuildCommand": "pnpm --filter @nicenote/desktop build:frontend"
   },
   "app": {
     "windows": [

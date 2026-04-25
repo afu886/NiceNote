@@ -77,9 +77,6 @@ importers:
       '@nicenote/app-shell':
         specifier: workspace:*
         version: link:../../../packages/app-shell
-      '@nicenote/domain':
-        specifier: workspace:*
-        version: link:../../../packages/domain
       '@nicenote/editor':
         specifier: workspace:*
         version: link:../../../packages/editor
@@ -190,9 +187,6 @@ importers:
       '@nicenote/app-shell':
         specifier: workspace:*
         version: link:../../packages/app-shell
-      '@nicenote/domain':
-        specifier: workspace:*
-        version: link:../../packages/domain
       '@nicenote/editor':
         specifier: workspace:*
         version: link:../../packages/editor
@@ -260,9 +254,6 @@ importers:
 
   packages/app-shell:
     dependencies:
-      '@nicenote/domain':
-        specifier: workspace:*
-        version: link:../domain
       '@nicenote/editor':
         specifier: workspace:*
         version: link:../editor
@@ -319,25 +310,9 @@ importers:
         specifier: ^5.0.0
         version: 5.1.6
     devDependencies:
-      '@types/react':
-        specifier: ^19.0.0
-        version: 19.2.10
       typescript:
         specifier: ~5.9.3
         version: 5.9.3
-
-  packages/domain:
-    dependencies:
-      '@nicenote/shared':
-        specifier: workspace:*
-        version: link:../shared
-    devDependencies:
-      typescript:
-        specifier: ~5.9.3
-        version: 5.9.3
-      vitest:
-        specifier: ^3.2.4
-        version: 3.2.4(@types/node@20.19.33)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
 
   packages/editor:
     dependencies:
