@@ -1,6 +1,12 @@
 ---
-name: spec-plan-rollout
-description: Create spec-first rollout packages for large engineering initiatives: a human-readable spec, a phase-and-batch execution plan, and an optional generated `rollout.py` runner. Use when Codex needs to orchestrate refactors, migrations, convergence work, or cross-system delivery with hard rules, verification commands, external dependencies, operational constraints, and resumable batches.
+name: codex-plan-rollout
+description: >-
+  Create spec-first rollout packages for large engineering initiatives: a
+  human-readable spec, a phase-and-batch execution plan, and an optional
+  generated `rollout.py` runner. Use when Codex needs to orchestrate refactors,
+  migrations, convergence work, or cross-system delivery with hard rules,
+  verification commands, external dependencies, operational constraints, and
+  resumable batches.
 ---
 
 # Spec Plan Rollout
@@ -20,6 +26,16 @@ This skill can produce two package shapes:
 
 Choose the planning package when the work is still exploratory, heavily approval-driven, or not yet safe for unattended execution. Choose the execution package only when the rollout batches are in-repo, non-interactive, fully automatable, and verifiable.
 
+## Output Directory
+
+Each rollout owns its own subdirectory under `.topicly/runners/`, named after the rollout's slug (`<runner-name>`, identical to `rollout.name` in the plan YAML). Use a slug-friendly name (lowercase, hyphenated, no spaces) so it can be used directly as a directory name. All artifacts MUST live under that tree:
+
+- Spec: `.topicly/runners/<runner-name>/spec.md`
+- Plan: `.topicly/runners/<runner-name>/plan.md`
+- Runner: `.topicly/runners/<runner-name>/rollout.py`
+
+The runner's runtime workdir (state, prompts, logs) defaults to `.topicly/runners/<runner-name>/logs` so every artifact for one rollout stays under one tree. Override only via `rollout.workdir` in the plan YAML.
+
 ## Workflow
 
 1. Read these references before drafting:
@@ -27,11 +43,11 @@ Choose the planning package when the work is still exploratory, heavily approval
    - [references/plan-template.md](references/plan-template.md)
    - [references/orchestration-patterns.md](references/orchestration-patterns.md)
 
-2. Draft a project-specific spec.
+2. Draft a project-specific spec at `.topicly/runners/<runner-name>/spec.md`.
    Capture current state, target state, goals, non-goals, principles, technical boundaries, rollout and rollback notes, external dependencies, verification strategy, risks, and definition of done.
    Keep the spec human-readable. It is the planning source, not the runtime source.
 
-3. Draft a project-specific implementation plan.
+3. Draft a project-specific implementation plan at `.topicly/runners/<runner-name>/plan.md`.
    Keep prose concise but useful for humans.
    Keep the YAML block between `<!-- rollout-plan:start -->` and `<!-- rollout-plan:end -->` complete and valid because [scripts/generate_rollout.py](scripts/generate_rollout.py) parses that block.
    Model each phase as a milestone and each batch as the smallest end-to-end unit one Codex invocation should finish safely.
@@ -41,10 +57,10 @@ Choose the planning package when the work is still exploratory, heavily approval
    Generate a runner only when the plan is stable enough and every runnable batch is local, deterministic, non-interactive, and fully automatable.
    If the initiative is hybrid, keep manual or out-of-repo steps in prose or in an explicit ops checklist. Do not encode them as runner batches.
 
-5. Generate the runner when appropriate:
+5. Generate the runner when appropriate. By default it writes `rollout.py` next to the plan, so it lands at `.topicly/runners/<runner-name>/rollout.py`. Pass `--output` only to override:
 
    ```bash
-   python3 scripts/generate_rollout.py --plan /path/to/plan.md --output /path/to/rollout.py
+   python3 scripts/generate_rollout.py --plan .topicly/runners/<runner-name>/plan.md
    ```
 
 6. Review the generated runner before execution.
@@ -56,12 +72,12 @@ Choose the planning package when the work is still exploratory, heavily approval
 7. Execute or resume the rollout:
 
    ```bash
-   python3 /path/to/rollout.py --list
-   python3 /path/to/rollout.py
-   python3 /path/to/rollout.py --from-phase 02-contract
-   python3 /path/to/rollout.py --from-batch 02-02-handlers
-   python3 /path/to/rollout.py --only-batch 03-01-tests
-   python3 /path/to/rollout.py --dry-run
+   python3 .topicly/runners/<runner-name>/rollout.py --list
+   python3 .topicly/runners/<runner-name>/rollout.py
+   python3 .topicly/runners/<runner-name>/rollout.py --from-phase 02-contract
+   python3 .topicly/runners/<runner-name>/rollout.py --from-batch 02-02-handlers
+   python3 .topicly/runners/<runner-name>/rollout.py --only-batch 03-01-tests
+   python3 .topicly/runners/<runner-name>/rollout.py --dry-run
    ```
 
 ## Planning Rules

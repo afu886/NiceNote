@@ -19,120 +19,123 @@ If prose and YAML disagree, the YAML block wins.
 - Model manual or out-of-repo checkpoints explicitly in prose or an external checklist instead of hiding them in runner batches.
 
 <!-- rollout-plan:start -->
+
 ```yaml
 rollout:
-  name: "<initiative-name>"
-  repo_root: "/absolute/path/to/repo"
-  workdir: ".codex-rollout"
+  name: '<initiative-name>'
+  repo_root: '/absolute/path/to/repo'
+  # workdir defaults to .topicly/runners/{rollout.name}/logs; uncomment to override.
+  # workdir: ".topicly/runners/<initiative-name>/logs"
   codex_cmd: null
   model: null
   max_fix_attempts: 1
   allow_dirty: false
   commit_per_batch: false
   sources_of_truth:
-    - "docs/spec.md"
-    - "docs/architecture.md"
+    - 'docs/spec.md'
+    - 'docs/architecture.md'
   planning_notes:
-    - "Mention plan-wide context such as baseline metrics, migration shape, or scope boundaries."
+    - 'Mention plan-wide context such as baseline metrics, migration shape, or scope boundaries.'
   success_metrics:
-    - "Document one measurable outcome the rollout should improve or hold constant."
+    - 'Document one measurable outcome the rollout should improve or hold constant.'
   global_context:
-    - "Summarize project-wide context that every batch should see."
-    - "Mention any important repo conventions."
+    - 'Summarize project-wide context that every batch should see.'
+    - 'Mention any important repo conventions.'
   hard_rules:
-    - "Do not edit external systems or sibling repositories."
-    - "Keep diffs focused on the current batch."
-    - "Run the listed verification commands before reporting success."
+    - 'Do not edit external systems or sibling repositories.'
+    - 'Keep diffs focused on the current batch.'
+    - 'Run the listed verification commands before reporting success.'
   batch_prompt_suffix:
-    - "Finish only this batch and anything strictly required to make it pass."
+    - 'Finish only this batch and anything strictly required to make it pass.'
 phases:
-  - id: "01-foundation"
-    title: "Foundation"
-    goal: "Create the baseline needed for later work."
+  - id: '01-foundation'
+    title: 'Foundation'
+    goal: 'Create the baseline needed for later work.'
     depends_on: []
-    summary: "Shared context for every batch in this phase."
+    summary: 'Shared context for every batch in this phase.'
     entry_criteria:
-      - "Baseline context is clear enough to start this phase."
+      - 'Baseline context is clear enough to start this phase.'
     exit_criteria:
-      - "Shared scaffolding or rules are in place for later phases."
+      - 'Shared scaffolding or rules are in place for later phases.'
     risks:
-      - "Call out the main risk of this phase."
+      - 'Call out the main risk of this phase.'
     batches:
-      - id: "01-01-scaffold"
-        title: "Scaffold"
-        kind: "code"
-        execution: "codex"
-        goal: "Create the initial structure and make the baseline checks pass."
+      - id: '01-01-scaffold'
+        title: 'Scaffold'
+        kind: 'code'
+        execution: 'codex'
+        goal: 'Create the initial structure and make the baseline checks pass.'
         depends_on: []
         deliverables:
-          - "List the concrete files or outcomes expected from this batch."
+          - 'List the concrete files or outcomes expected from this batch.'
         acceptance:
-          - "List human-readable acceptance criteria for this batch."
+          - 'List human-readable acceptance criteria for this batch.'
         evidence_to_capture:
-          - "Describe logs, docs, or metrics that prove the batch is complete."
+          - 'Describe logs, docs, or metrics that prove the batch is complete.'
         verify_commands:
-          - "pnpm typecheck"
+          - 'pnpm typecheck'
         files_to_touch:
-          - "apps/example/**"
+          - 'apps/example/**'
         prompt_context:
-          - "Add batch-specific notes, tradeoffs, or constraints."
-      - id: "01-02-follow-up"
-        title: "Follow-up"
-        kind: "docs"
-        execution: "codex"
-        goal: "Capture the next phase gate in-repo and verify that the baseline still holds."
+          - 'Add batch-specific notes, tradeoffs, or constraints.'
+      - id: '01-02-follow-up'
+        title: 'Follow-up'
+        kind: 'docs'
+        execution: 'codex'
+        goal: 'Capture the next phase gate in-repo and verify that the baseline still holds.'
         depends_on:
-          - "01-01-scaffold"
+          - '01-01-scaffold'
         deliverables:
-          - "List the concrete files or outcomes expected from this batch."
+          - 'List the concrete files or outcomes expected from this batch.'
         acceptance:
-          - "List human-readable acceptance criteria for this batch."
+          - 'List human-readable acceptance criteria for this batch.'
         evidence_to_capture:
-          - "Describe the evidence needed before marking this batch complete."
+          - 'Describe the evidence needed before marking this batch complete.'
         verify_commands:
-          - "pnpm lint"
+          - 'pnpm lint'
         files_to_touch:
-          - "docs/runbook.md"
+          - 'docs/runbook.md'
         prompt_context:
-          - "Explain why this batch exists and what later work depends on it."
-  - id: "02-product-slice"
-    title: "Product Slice"
-    goal: "Deliver the first user-visible slice."
+          - 'Explain why this batch exists and what later work depends on it.'
+  - id: '02-product-slice'
+    title: 'Product Slice'
+    goal: 'Deliver the first user-visible slice.'
     depends_on:
-      - "01-foundation"
-    summary: "Shared context for every batch in this phase."
+      - '01-foundation'
+    summary: 'Shared context for every batch in this phase.'
     entry_criteria:
-      - "The foundation phase has completed and the key decision points are stable."
+      - 'The foundation phase has completed and the key decision points are stable.'
     exit_criteria:
-      - "The first slice is implemented and verified."
+      - 'The first slice is implemented and verified.'
     risks:
-      - "Note the most likely integration or migration risk."
+      - 'Note the most likely integration or migration risk.'
     batches:
-      - id: "02-01-feature"
-        title: "Feature"
-        kind: "code"
-        execution: "codex"
-        goal: "Implement the first user-visible slice."
+      - id: '02-01-feature'
+        title: 'Feature'
+        kind: 'code'
+        execution: 'codex'
+        goal: 'Implement the first user-visible slice.'
         depends_on: []
         deliverables:
-          - "List the concrete files or outcomes expected from this batch."
+          - 'List the concrete files or outcomes expected from this batch.'
         acceptance:
-          - "List human-readable acceptance criteria for this batch."
+          - 'List human-readable acceptance criteria for this batch.'
         evidence_to_capture:
-          - "Describe logs, docs, or metrics that prove the batch is complete."
+          - 'Describe logs, docs, or metrics that prove the batch is complete.'
         verify_commands:
-          - "pnpm test"
+          - 'pnpm test'
         files_to_touch:
-          - "apps/web/**"
+          - 'apps/web/**'
         prompt_context:
-          - "Add batch-specific notes, tradeoffs, or constraints."
+          - 'Add batch-specific notes, tradeoffs, or constraints.'
 ```
+
 <!-- rollout-plan:end -->
 
 ## Field Notes
 
 - `rollout.repo_root`: Prefer an absolute path because the generated `rollout.py` is standalone.
-- `rollout.workdir`: Relative paths are resolved from `repo_root`.
+- `rollout.workdir`: Relative paths are resolved from `repo_root`. Defaults to `.topicly/runners/{rollout.name}/logs` so runtime state lives alongside that rollout's spec, plan, and runner.
 - `rollout.sources_of_truth`: Injected into every batch prompt.
 - `rollout.planning_notes`: Shared planning context such as baseline metrics, migration shape, or cross-team constraints.
 - `rollout.success_metrics`: Reminders about what the initiative must measurably improve or preserve.

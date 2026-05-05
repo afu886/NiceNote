@@ -27,8 +27,6 @@ packages/
   database/             # Experimental native/mobile data layer; op-sqlite is an optional peer
   editor-bridge/        # Experimental native WebView editor template
   ui-native/            # Experimental native UI token mapping and components
-
-.docs/                  # Product and architecture planning docs
 ```
 
 There is currently no `packages/domain` package. Do not add dependencies or imports pointing at it unless you first create the real package and wire it into the workspace.

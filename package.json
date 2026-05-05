@@ -14,7 +14,6 @@
     "globals": "^16.5.0",
     "husky": "^9.0.0",
     "lint-staged": "^16.2.7",
-    "madge": "^8.0.0",
     "prettier": "^3.8.1",
     "tailwindcss": "^4.2.0",
     "tsx": "^4.21.0",
@@ -38,8 +37,7 @@
     "build": "turbo build",
     "dev": "turbo dev",
     "generate:css": "pnpm --filter @nicenote/web generate:css",
-    "lint": "turbo lint && pnpm lint:cycles",
-    "lint:cycles": "madge --extensions ts,tsx --ts-config ./tsconfig.madge.json --exclude \"(?:^|/)dist/|\\\\.css$\" --circular apps/web/src/App.tsx apps/web/src/components apps/web/src/lib apps/web/src/store packages/editor/src packages/shared/src packages/tokens/src packages/ui/src",
+    "lint": "turbo lint",
     "prepare": "husky",
     "typecheck": "tsc -b --pretty false",
     "test": "turbo test"

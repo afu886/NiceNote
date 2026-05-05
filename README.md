@@ -13,18 +13,18 @@ NiceNote 是一个跨平台笔记应用，支持富文本编辑，并以 Markdow
 
 ## 技术栈
 
-| 分类       | 技术                                                      |
-| ---------- | --------------------------------------------------------- |
-| Runtime    | Node.js 22, pnpm 10.28, Turborepo                         |
-| Language   | TypeScript 5.9, strict mode, bundler module resolution    |
-| Web        | React 19, Vite 7, TailwindCSS v4, Zustand v5              |
-| Desktop    | Tauri v2, Rust, rusqlite, anyhow, walkdir, notify         |
-| Mobile     | React Native 0.79, React Navigation v7, NativeWind v4     |
-| Editor     | Tiptap v3, ProseMirror, Markdown                          |
-| UI         | Radix UI, Floating UI, lucide-react                       |
-| Validation | Zod v4                                                    |
-| Test       | Vitest, @vitest/coverage-v8                               |
-| Quality    | ESLint 9 flat config, Prettier, madge, Husky, lint-staged |
+| 分类       | 技术                                                   |
+| ---------- | ------------------------------------------------------ |
+| Runtime    | Node.js 22, pnpm 10.28, Turborepo                      |
+| Language   | TypeScript 5.9, strict mode, bundler module resolution |
+| Web        | React 19, Vite 7, TailwindCSS v4, Zustand v5           |
+| Desktop    | Tauri v2, Rust, rusqlite, anyhow, walkdir, notify      |
+| Mobile     | React Native 0.79, React Navigation v7, NativeWind v4  |
+| Editor     | Tiptap v3, ProseMirror, Markdown                       |
+| UI         | Radix UI, Floating UI, lucide-react                    |
+| Validation | Zod v4                                                 |
+| Test       | Vitest, @vitest/coverage-v8                            |
+| Quality    | ESLint 9 flat config, Prettier, Husky, lint-staged     |
 
 ## 目录结构
 
@@ -45,7 +45,6 @@ packages/
   database/       # op-sqlite + Drizzle ORM，供 native apps 使用
   editor-bridge/  # Native 端 Tiptap WebView bridge
   ui-native/      # Native UI 组件
-.docs/            # PRD、架构评审、迁移计划等规划文档
 ```
 
 ## 快速开始
@@ -105,7 +104,7 @@ pnpm --filter @nicenote/mobile android
 # 根目录
 pnpm dev                # 启动所有 apps/packages 开发模式
 pnpm build              # 构建全部
-pnpm lint               # ESLint + madge 循环依赖检查
+pnpm lint               # ESLint 检查
 pnpm typecheck          # TypeScript 全量类型检查
 pnpm test               # Vitest 全量测试
 pnpm test -- --coverage # 测试并生成覆盖率报告
@@ -245,4 +244,3 @@ CI 在 push 到 `main` 或创建 PR 时按顺序执行：
 ## 相关文档
 
 - [AGENTS.md](./AGENTS.md)：面向 AI 协作与实现细节的完整工程指南
-- [.docs](./.docs)：产品、架构与迁移规划文档

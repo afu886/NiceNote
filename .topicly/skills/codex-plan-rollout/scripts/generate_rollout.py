@@ -45,6 +45,7 @@ from __future__ import annotations
 import argparse
 import dataclasses
 import json
+import os
 import shlex
 import shutil
 import subprocess
@@ -193,7 +194,7 @@ def build_phase_graph() -> list[Phase]:
 
 ROLLOUT = PLAN["rollout"]
 REPO = Path(ROLLOUT["repo_root"]).resolve()
-RAW_WORKDIR = Path(ROLLOUT.get("workdir") or ".codex-rollout")
+RAW_WORKDIR = Path(ROLLOUT.get("workdir") or f".topicly/runners/{ROLLOUT['name']}/logs")
 WORKDIR = RAW_WORKDIR if RAW_WORKDIR.is_absolute() else REPO / RAW_WORKDIR
 STATE = WORKDIR / "state.json"
 PROMPTS_DIR = WORKDIR / "prompts"
@@ -561,14 +562,65 @@ def git_commit_batch(batch: Batch) -> None:
     run_shell(f"git commit -m {shlex.quote(message)}")
 
 
+def strip_outer_quotes(value: str) -> str:
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in {'"', "'"}:
+        return value[1:-1]
+    return value
+
+
+def split_command_line(command: str) -> list[str]:
+    if sys.platform == "win32":
+        return [strip_outer_quotes(part) for part in shlex.split(command, posix=False)]
+    return shlex.split(command)
+
+
+def find_executable(command: str) -> str | None:
+    resolved = shutil.which(command)
+    if resolved:
+        return resolved
+
+    candidate = Path(command)
+    if candidate.exists():
+        return str(candidate)
+
+    if sys.platform != "win32":
+        return None
+
+    suffixes = [""] if candidate.suffix else [".cmd", ".bat", ".exe", ".ps1"]
+    search_dirs = os.environ.get("PATH", "").split(os.pathsep)
+    for directory in search_dirs:
+        if not directory:
+            continue
+        for suffix in suffixes:
+            executable = Path(directory) / f"{command}{suffix}"
+            if executable.exists():
+                return str(executable)
+    return None
+
+
+def resolve_executable_command(command: str) -> list[str]:
+    executable = find_executable(command)
+    if executable is None:
+        print(c(f"! 未找到命令 `{command}`。请安装 Codex CLI，或使用 --codex-cmd 覆盖。", Colors.RED))
+        sys.exit(2)
+
+    if sys.platform == "win32" and Path(executable).suffix.lower() == ".ps1":
+        launcher = shutil.which("pwsh") or shutil.which("powershell")
+        if launcher is None:
+            print(c(f"! `{command}` 解析为 PowerShell 脚本，但未找到 pwsh/powershell。", Colors.RED))
+            sys.exit(2)
+        script_path = executable.replace("'", "''")
+        return [launcher, "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", f"$input | & '{script_path}' @args"]
+
+    return [executable]
+
+
 def resolve_codex_cmd(user_cmd: str | None, model: str | None) -> list[str]:
     template = user_cmd or ROLLOUT.get("codex_cmd") or DEFAULT_CODEX_CMD
     rendered = template.format(repo=str(REPO))
-    cmd = shlex.split(rendered)
+    cmd = split_command_line(rendered)
     require(bool(cmd), "Codex command is empty.")
-    if shutil.which(cmd[0]) is None:
-        print(c(f"! 未找到命令 `{cmd[0]}`。请安装 Codex CLI，或使用 --codex-cmd 覆盖。", Colors.RED))
-        sys.exit(2)
+    cmd = [*resolve_executable_command(cmd[0]), *cmd[1:]]
     if model and "--model" not in cmd:
         if "-" in cmd:
             index = cmd.index("-")
@@ -1003,10 +1055,12 @@ def validate_rollout(raw: dict, plan_path: Path) -> dict:
     if not repo_root.is_absolute():
         repo_root = (plan_path.parent / repo_root).resolve()
 
+    name = as_string(raw.get("name"), "rollout.name")
+    default_workdir = f".topicly/runners/{name}/logs"
     rollout = {
-        "name": as_string(raw.get("name"), "rollout.name"),
+        "name": name,
         "repo_root": str(repo_root),
-        "workdir": as_string(raw.get("workdir", ".codex-rollout"), "rollout.workdir"),
+        "workdir": as_string(raw.get("workdir", default_workdir), "rollout.workdir"),
         "codex_cmd": raw.get("codex_cmd"),
         "model": raw.get("model"),
         "max_fix_attempts": as_int(raw.get("max_fix_attempts", 1), "rollout.max_fix_attempts"),
