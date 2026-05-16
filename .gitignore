@@ -64,3 +64,9 @@ apps/desktop/src-tauri/gen/
 apps/desktop/frontend/dist/
 apps/desktop/frontend/src/generated-tokens.css
 apps/web/src/generated-tokens.css
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+.playwright/

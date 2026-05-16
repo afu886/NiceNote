@@ -175,11 +175,48 @@ export default tseslint.config(
     },
   },
 
+  // 9b. Playwright e2e：Playwright fixture 的 use() 与 React Hook 无关
+  {
+    files: ['apps/web/e2e/**/*.{ts,tsx}', 'apps/web/playwright.config.ts'],
+    plugins: { 'react-hooks': reactHooks },
+    rules: {
+      'react-hooks/rules-of-hooks': 'off',
+    },
+  },
+
   // 10. Shared 包特定配置 (packages/shared)
   {
     files: ['packages/shared/**/*.ts'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
+
+  // 10b. Core 业务内核边界：禁止依赖 React/Tauri/localStorage/SQLite
+  {
+    files: ['packages/core/**/*.ts'],
+    ignores: ['packages/core/**/*.test.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            { name: 'react', message: 'core 不依赖 React' },
+            { name: 'react-dom', message: 'core 不依赖 React' },
+            { name: 'zustand', message: 'core 不依赖 Zustand（状态在 app-dom）' },
+          ],
+          patterns: [
+            { group: ['@tauri-apps/*'], message: 'core 不依赖 Tauri' },
+            { group: ['*sqlite*', 'op-sqlite'], message: 'core 不依赖 SQLite' },
+          ],
+        },
+      ],
+      'no-restricted-globals': [
+        'error',
+        { name: 'localStorage', message: 'core 不直接访问 localStorage' },
+        { name: 'window', message: 'core 不依赖浏览器全局' },
+        { name: 'document', message: 'core 不依赖 DOM' },
+      ],
     },
   },
 

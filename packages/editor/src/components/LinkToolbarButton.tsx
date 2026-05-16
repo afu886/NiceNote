@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react'
 
 import type { Editor } from '@tiptap/react'
+import { Button, Input, Popover } from '@topicly-ui/react'
 import { Link2, Link2Off } from 'lucide-react'
 
 import type { LinkValidationErrorKey } from '@nicenote/shared'
 import { getLinkValidationError } from '@nicenote/shared'
-import { Button, Input, Popover, PopoverContent, PopoverTrigger } from '@nicenote/ui'
 
 import { clearLink, setLinkHref } from '../core/commands'
 import type { NoteEditorStateSnapshot } from '../core/state'
+
+import { EditorToolbarButton } from './EditorToolbarButton'
 
 function getLinkIcon(linkActive: boolean) {
   const LinkIcon = linkActive ? Link2Off : Link2
@@ -51,87 +53,61 @@ export function LinkToolbarButton({
     setHrefInput(typeof currentHref === 'string' && currentHref.trim() ? currentHref : 'https://')
   }, [open, editor])
 
+  // 链接已激活：直接清除分支，保留 Toolbar.Button（参与键盘 roving 导航）
   if (linkActive) {
     return (
-      <Button
-        type="button"
-        aria-label={label}
-        data-style="ghost"
-        data-active-state="on"
+      <EditorToolbarButton
+        label={label}
+        isMobile={isMobile}
+        active
         disabled={disabled}
-        onClick={() => {
-          clearLink(editor)
-        }}
-        showTooltip={!isMobile}
-        {...(!isMobile ? { tooltip: label } : {})}
-        {...(shortcut ? { shortcutKeys: shortcut } : {})}
-      >
-        {getLinkIcon(true)}
-      </Button>
+        onClick={() => clearLink(editor)}
+        icon={getLinkIcon(true)}
+        {...(shortcut ? { shortcut } : {})}
+      />
     )
   }
 
+  const commit = () => {
+    if (!editor || validationErrorKey) return
+    setLinkHref(editor, hrefInput.trim())
+    setOpen(false)
+  }
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          type="button"
-          aria-label={label}
-          data-style="ghost"
-          data-active-state="off"
-          disabled={disabled}
-          showTooltip={!isMobile}
-          {...(!isMobile ? { tooltip: label } : {})}
-          {...(shortcut ? { shortcutKeys: shortcut } : {})}
-        >
-          {getLinkIcon(false)}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent sideOffset={8} align="start" className="z-popover w-80 space-y-3 p-3">
+    <Popover.Root isOpen={open} onOpenChange={setOpen} placement="top-start">
+      <Popover.Trigger aria-label={label} disabled={disabled} title={!isMobile ? label : undefined}>
+        {getLinkIcon(false)}
+      </Popover.Trigger>
+      <Popover.Content className="z-popover w-80 space-y-3 p-3">
         <form
           className="space-y-2"
           onSubmit={(event) => {
             event.preventDefault()
-            if (!editor || validationErrorKey) return
-            setLinkHref(editor, hrefInput.trim())
-            setOpen(false)
+            commit()
           }}
         >
           <Input
             type="url"
             value={hrefInput}
-            onChange={(event) => {
-              setHrefInput(event.target.value)
-            }}
+            onValueChange={setHrefInput}
             placeholder="https://example.com"
             autoFocus
-            aria-invalid={validationError ? 'true' : 'false'}
+            isInvalid={Boolean(validationError)}
           />
           <div className="min-h-5 text-xs text-destructive" aria-live="polite">
             {validationError ?? ''}
           </div>
           <div className="flex items-center justify-end gap-2">
-            <Button
-              type="button"
-              data-style="ghost"
-              showTooltip={false}
-              onClick={() => {
-                setOpen(false)
-              }}
-            >
+            <Button variant="ghost" onPress={() => setOpen(false)}>
               {cancelLabel}
             </Button>
-            <Button
-              type="submit"
-              data-style="primary"
-              showTooltip={false}
-              disabled={Boolean(validationErrorKey)}
-            >
+            <Button variant="primary" isDisabled={Boolean(validationErrorKey)} onPress={commit}>
               {applyLabel}
             </Button>
           </div>
         </form>
-      </PopoverContent>
-    </Popover>
+      </Popover.Content>
+    </Popover.Root>
   )
 }

@@ -13,10 +13,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@nicenote/app-shell": "workspace:*",
+    "@nicenote/app-dom": "workspace:*",
+    "@nicenote/core": "workspace:*",
     "@nicenote/editor": "workspace:*",
     "@nicenote/shared": "workspace:*",
     "@nicenote/ui": "workspace:*",
+    "@topicly-ui/react": "0.0.1",
     "i18next": "^25.8.11",
     "react-i18next": "^16.5.4",
     "@tauri-apps/api": "^2.0.0",
@@ -37,6 +39,7 @@
     "@vitejs/plugin-react": "^5.1.1",
     "tailwindcss": "^4.2.0",
     "typescript": "~5.9.3",
-    "vite": "^7.2.4"
+    "vite": "^7.2.4",
+    "vitest": "^3.2.4"
   }
 }

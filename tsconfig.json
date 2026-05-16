@@ -4,7 +4,8 @@
     // supported surfaces + 当前仍被正式支持路径使用的共享包
     { "path": "./apps/web" },
     { "path": "./apps/desktop/frontend" },
-    { "path": "./packages/app-shell" },
+    { "path": "./packages/app-dom" },
+    { "path": "./packages/core" },
     { "path": "./packages/editor" },
     { "path": "./packages/shared" },
     { "path": "./packages/tokens" },

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 
-import { Button } from '@nicenote/ui'
+import { EditorToolbarButton } from './EditorToolbarButton'
 
 export function ActionToolbarButton({
   label,
@@ -20,18 +20,14 @@ export function ActionToolbarButton({
   icon: ReactNode
 }) {
   return (
-    <Button
-      type="button"
-      onClick={onClick}
-      aria-label={label}
-      data-style="ghost"
-      data-active-state={active ? 'on' : 'off'}
+    <EditorToolbarButton
+      label={label}
+      isMobile={isMobile}
+      active={active}
       disabled={disabled}
-      showTooltip={!isMobile}
-      {...(!isMobile ? { tooltip: label } : {})}
-      {...(shortcut ? { shortcutKeys: shortcut } : {})}
-    >
-      {icon}
-    </Button>
+      onClick={onClick}
+      icon={icon}
+      {...(shortcut ? { shortcut } : {})}
+    />
   )
 }

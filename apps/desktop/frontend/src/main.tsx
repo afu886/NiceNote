@@ -1,9 +1,9 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 
-import { ErrorBoundary, initI18n } from '@nicenote/app-shell'
+import { ErrorBoundary, initI18n } from '@nicenote/app-dom'
 
-import App from './App'
+import { DesktopHost } from './host/DesktopHost'
 
 import './index.css'
 
@@ -14,7 +14,7 @@ initI18n({ storageKey: 'nicenote-desktop-lang' })
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErrorBoundary>
-      <App />
+      <DesktopHost />
     </ErrorBoundary>
   </StrictMode>
 )

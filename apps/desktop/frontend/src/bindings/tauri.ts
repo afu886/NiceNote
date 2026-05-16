@@ -9,6 +9,8 @@ export type { Settings } from '@nicenote/shared'
 // ============================================================
 
 export interface NoteFile {
+  /** 合成稳定标识（来自 frontmatter id；Rust 在缺失时回填）。runtime 边界翻译为 NoteId。 */
+  id: string
   path: string
   title: string
   summary: string

@@ -1,6 +1,7 @@
 import { Fragment, type ReactNode } from 'react'
 
 import type { Editor } from '@tiptap/react'
+import { Toolbar } from '@topicly-ui/react'
 import {
   Bold,
   Code,
@@ -19,7 +20,6 @@ import {
 } from 'lucide-react'
 
 import type { LinkValidationErrorKey } from '@nicenote/shared'
-import { Separator, Toolbar, ToolbarGroup } from '@nicenote/ui'
 
 import { isNoteCommandId, type NoteCommandId, runNoteCommand } from '../core/commands'
 import type { EditorToolbarLabels } from '../core/labels'
@@ -237,10 +237,10 @@ export function MinimalToolbar({
 }: MinimalToolbarProps) {
   const snapshot = useEditorSnapshot(snapshotStore)
   return (
-    <Toolbar variant="floating" className="nn-editor-toolbar">
+    <Toolbar.Root variant="plain" aria-label="Formatting toolbar" className="nn-editor-toolbar">
       {NOTE_TOOLBAR_GROUPS.map((group, groupIndex) => (
         <Fragment key={groupIndex}>
-          <ToolbarGroup>
+          <Toolbar.Group>
             {group.map((item) => {
               const label = toolbarLabels[item.labelKey]
               switch (item.id) {
@@ -321,10 +321,10 @@ export function MinimalToolbar({
                 }
               }
             })}
-          </ToolbarGroup>
-          {groupIndex < NOTE_TOOLBAR_GROUPS.length - 1 ? <Separator /> : null}
+          </Toolbar.Group>
+          {groupIndex < NOTE_TOOLBAR_GROUPS.length - 1 ? <Toolbar.Separator /> : null}
         </Fragment>
       ))}
-    </Toolbar>
+    </Toolbar.Root>
   )
 }

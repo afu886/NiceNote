@@ -1,6 +1,11 @@
 @import 'tailwindcss';
 @source "../../../../packages";
 
+/* topicly-ui 组件样式（阶段 2 验证用临时引入；完整样式入口重排见阶段 3） */
+@import '@topicly-ui/react/variables.css';
+@import '@topicly-ui/react/theme.css';
+@import '@topicly-ui/react/styles';
+
 /* NiceNote 编辑器样式 */
 @import '@nicenote/editor/styles/editor.css';
 

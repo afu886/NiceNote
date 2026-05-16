@@ -4,6 +4,7 @@ use std::path::{Path, PathBuf};
 use anyhow::{Context, Result};
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 use walkdir::WalkDir;
 
 use super::frontmatter::{self, Frontmatter};
@@ -19,6 +20,9 @@ use super::utils::{
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct NoteFile {
+    /// 合成稳定标识（来自 frontmatter id；缺失时读取/保存时回填）。
+    /// Desktop runtime 在 repository 边界翻译为 NoteId，path 不外泄进 app-dom。
+    pub id: String,
     pub path: String,
     pub title: String,
     pub summary: String,
@@ -66,10 +70,23 @@ pub fn list_notes(folder_path: &str) -> Result<Vec<NoteFile>> {
 // 读取单个笔记
 // ============================================================
 
-/// 读取笔记元信息（不含正文）
+/// 确保 frontmatter 含稳定 id；缺失时生成 UUID 并回写文件（读取/保存时回填）。
+/// 返回 true 表示发生了回填（文件已被改写），用于让调用方刷新 raw_content。
+fn ensure_frontmatter_id(path: &Path, fm: &mut Frontmatter, body: &str) -> Result<bool> {
+    if !fm.id.as_deref().unwrap_or("").is_empty() {
+        return Ok(false);
+    }
+    fm.id = Some(Uuid::new_v4().to_string());
+    let new_raw = frontmatter::write(fm, body);
+    atomic_write(path, &new_raw)?;
+    Ok(true)
+}
+
+/// 读取笔记元信息（不含正文）。无 id 的旧笔记在此回填并写回。
 fn read_meta(path: &Path) -> Result<NoteFile> {
     let raw = fs::read_to_string(path)?;
-    let (fm, body) = frontmatter::parse(&raw);
+    let (mut fm, body) = frontmatter::parse(&raw);
+    ensure_frontmatter_id(path, &mut fm, &body)?;
     build_note_file(path, &fm, &body)
 }
 
@@ -78,12 +95,18 @@ pub fn get_note_content(path: &str) -> Result<NoteContent> {
     validate_note_path(path)?;
     let p = Path::new(path);
     let raw = fs::read_to_string(p).context("读取笔记文件失败")?;
-    let (fm, body) = frontmatter::parse(&raw);
+    let (mut fm, body) = frontmatter::parse(&raw);
+    let backfilled = ensure_frontmatter_id(p, &mut fm, &body)?;
     let meta = build_note_file(p, &fm, &body)?;
+    let raw_content = if backfilled {
+        frontmatter::write(&fm, &body)
+    } else {
+        raw
+    };
     Ok(NoteContent {
         meta,
         content: body,
-        raw_content: raw,
+        raw_content,
     })
 }
 
@@ -104,6 +127,7 @@ fn build_note_file(path: &Path, fm: &Frontmatter, body: &str) -> Result<NoteFile
     let created_at = fm.created_at.clone().unwrap_or_else(|| updated_at.clone());
 
     Ok(NoteFile {
+        id: fm.id.clone().unwrap_or_default(),
         path: path.to_string_lossy().to_string(),
         title,
         summary,
@@ -123,6 +147,9 @@ pub fn save_note(path: &str, content: &str, tags: &[String]) -> Result<()> {
     let p = Path::new(path);
     let raw = fs::read_to_string(p).context("保存前读取原文件失败")?;
     let (mut fm, _) = frontmatter::parse(&raw);
+    if fm.id.as_deref().unwrap_or("").is_empty() {
+        fm.id = Some(Uuid::new_v4().to_string());
+    }
     fm.tags = tags.to_vec();
 
     let new_raw = frontmatter::write(&fm, content);
@@ -147,9 +174,10 @@ pub fn create_note(folder_path: &str) -> Result<NoteFile> {
         .and_then(|s| s.to_str())
         .unwrap_or("Untitled");
     let fm = Frontmatter {
+        id: Some(Uuid::new_v4().to_string()),
         title: Some(stem.to_string()),
-        tags: vec![],
         created_at: Some(now),
+        ..Default::default()
     };
     let raw = frontmatter::write(&fm, "");
     atomic_write(&path, &raw)?;
@@ -172,6 +200,10 @@ pub fn rename_note(old_path: &str, new_title: &str) -> Result<NoteFile> {
     // 先更新 frontmatter 中的 title
     let raw = fs::read_to_string(old).context("重命名前读取原文件失败")?;
     let (mut fm, body) = frontmatter::parse(&raw);
+    // id 跨改名必须保持不变（这正是 NoteId 跨 path 变化稳定的来源）；缺失才回填
+    if fm.id.as_deref().unwrap_or("").is_empty() {
+        fm.id = Some(Uuid::new_v4().to_string());
+    }
     fm.title = Some(new_title.to_string());
     let new_raw = frontmatter::write(&fm, &body);
 
@@ -339,4 +371,57 @@ fn build_tree(dir: &Path) -> Result<FolderNode> {
         note_count,
         children,
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn temp_md(name: &str, contents: &str) -> PathBuf {
+        let dir = std::env::temp_dir().join(format!(
+            "nicenote-noteio-test-{}",
+            Uuid::new_v4()
+        ));
+        fs::create_dir_all(&dir).unwrap();
+        let p = dir.join(name);
+        fs::write(&p, contents).unwrap();
+        p
+    }
+
+    #[test]
+    fn test_read_meta_backfills_stable_id() {
+        // 旧笔记无 id：读取应回填，写回磁盘，且二次读取 id 不变
+        let p = temp_md("Old Note.md", "---\ntitle: Old\n---\n\n正文");
+        let first = read_meta(&p).unwrap();
+        assert!(!first.id.is_empty(), "应回填非空 id");
+
+        let on_disk = fs::read_to_string(&p).unwrap();
+        assert!(on_disk.contains(&format!("id: {}", first.id)), "id 应写回文件");
+
+        let second = read_meta(&p).unwrap();
+        assert_eq!(first.id, second.id, "二次读取 id 必须稳定");
+    }
+
+    #[test]
+    fn test_rename_preserves_id() {
+        let p = temp_md(
+            "A.md",
+            "---\nid: fixed-id-123\ntitle: A\n---\n\n正文",
+        );
+        let renamed = rename_note(p.to_str().unwrap(), "B").unwrap();
+        assert_eq!(renamed.id, "fixed-id-123", "改名后 id 必须不变");
+    }
+
+    #[test]
+    fn test_save_preserves_unknown_frontmatter() {
+        let p = temp_md(
+            "C.md",
+            "---\nid: c-1\ntitle: C\nauthor: afu\n---\n\nbody",
+        );
+        save_note(p.to_str().unwrap(), "new body", &["tag1".to_string()]).unwrap();
+        let raw = fs::read_to_string(&p).unwrap();
+        assert!(raw.contains("id: c-1"));
+        assert!(raw.contains("author: afu"), "未知字段必须保留");
+        assert!(raw.contains("new body"));
+    }
 }

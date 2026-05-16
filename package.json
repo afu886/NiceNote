@@ -32,6 +32,11 @@
     ]
   },
   "packageManager": "pnpm@10.28.2",
+  "pnpm": {
+    "overrides": {
+      "@topicly-ui/react": "link:../topicly-ui/packages/react"
+    }
+  },
   "private": true,
   "scripts": {
     "build": "turbo build",

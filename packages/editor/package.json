@@ -3,8 +3,10 @@
   "version": "0.0.1",
   "dependencies": {
     "@nicenote/shared": "workspace:*",
-    "@nicenote/ui": "workspace:*",
+    "@topicly-ui/react": "0.0.1",
     "@tiptap/core": "^3.18.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.6.0",
     "@tiptap/extension-placeholder": "^3.18.0",
     "@tiptap/extension-text-align": "^3.18.0",
     "@tiptap/extension-typography": "^3.18.0",

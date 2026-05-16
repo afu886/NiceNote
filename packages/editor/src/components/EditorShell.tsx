@@ -3,8 +3,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Editor } from '@tiptap/react'
 import { EditorContext, useEditor } from '@tiptap/react'
 
-import { useIsBreakpoint } from '@nicenote/ui'
-
 import type { EditorLabels } from '../core/labels'
 import { DEFAULT_EDITOR_LABELS } from '../core/labels'
 import {
@@ -15,6 +13,7 @@ import {
 } from '../core/serialization'
 import { createEditorSnapshotStore } from '../core/snapshot-store'
 import { getNoteEditorStateSnapshot } from '../core/state'
+import { useIsMobileBreakpoint } from '../hooks/useIsMobileBreakpoint'
 import { NOTE_BEHAVIOR_POLICY } from '../preset-note/behavior-policy'
 import { createMinimalExtensions } from '../preset-note/minimal-extensions'
 import { isToggleSourceModeShortcut } from '../preset-note/shortcuts'
@@ -71,7 +70,7 @@ export function NicenoteEditor({
 }: NicenoteEditorProps) {
   const resolvedLabels = labels ?? DEFAULT_EDITOR_LABELS
   const initialMarkdown = useMemo(() => normalizeMarkdownContent(value), [value])
-  const isMobileFromHook = useIsBreakpoint()
+  const isMobileFromHook = useIsMobileBreakpoint()
   const isMobile = isMobileProp ?? isMobileFromHook
   const isApplyingExternalContent = useRef(false)
   const lastEmittedMarkdown = useRef(initialMarkdown)

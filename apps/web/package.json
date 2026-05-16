@@ -2,10 +2,12 @@
   "name": "@nicenote/web",
   "version": "0.0.0",
   "dependencies": {
-    "@nicenote/app-shell": "workspace:*",
+    "@nicenote/app-dom": "workspace:*",
+    "@nicenote/core": "workspace:*",
     "@nicenote/editor": "workspace:*",
     "@nicenote/shared": "workspace:*",
     "@nicenote/ui": "workspace:*",
+    "@topicly-ui/react": "0.0.1",
     "date-fns": "^4.1.0",
     "i18next": "^25.8.11",
     "jszip": "^3.10.1",
@@ -17,12 +19,14 @@
   },
   "devDependencies": {
     "@nicenote/tokens": "workspace:*",
+    "@playwright/test": "^1.49.1",
     "@tailwindcss/vite": "^4.2.0",
     "@types/node": "^20.19.0",
     "@types/react": "^19.2.10",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
     "eslint": "^9.39.2",
+    "jsdom": "^25.0.1",
     "tailwindcss": "^4.2.0",
     "typescript": "~5.9.3",
     "vite": "^7.2.4"
@@ -34,7 +38,10 @@
     "generate:css": "pnpm --filter @nicenote/tokens generate:css",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "e2e": "playwright test",
+    "e2e:update": "playwright test --update-snapshots",
+    "e2e:ui": "playwright test --ui"
   },
   "type": "module"
 }
