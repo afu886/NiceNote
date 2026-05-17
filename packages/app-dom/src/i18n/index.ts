@@ -18,6 +18,8 @@ export function initI18n(options: { storageKey: string }) {
   initialized = true
 
   function detectLanguage(): string {
+    // app-dom 仅服务 Web/Desktop（DOM 环境），localStorage 为已知平台依赖；
+    // 用 typeof 守卫兼容无 storage 场景，无需经 runtime 注入。
     if (typeof localStorage !== 'undefined') {
       const saved = localStorage.getItem(options.storageKey)
       if (saved === 'zh' || saved === 'en') return saved

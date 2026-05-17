@@ -1,5 +1,0 @@
-export type { ButtonProps } from './components/Button'
-export { Button } from './components/Button'
-export type { TextInputProps } from './components/TextInput'
-export { TextInput } from './components/TextInput'
-export { borderRadius, colors, fontSize, spacing } from './theme/tokens'

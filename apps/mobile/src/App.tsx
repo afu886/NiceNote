@@ -6,7 +6,7 @@ import { RootNavigator } from './navigation'
 
 export default function App(): React.JSX.Element {
   return (
-    // experimental：mobile 当前仅保留最小导航壳，不接入共享 app-shell runtime。
+    // experimental：mobile 当前仅保留最小导航壳，未接入共享 runtime（参见架构 Phase 5）。
     <NavigationContainer>
       <RootNavigator />
     </NavigationContainer>

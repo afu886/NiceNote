@@ -7,7 +7,7 @@ export default {
     './src/**/*.{js,ts,jsx,tsx}',
     '../../packages/ui/src/**/*.{js,ts,jsx,tsx}',
     '../../packages/editor/src/**/*.{js,ts,jsx,tsx}',
-    '../../packages/app-shell/src/**/*.{js,ts,jsx,tsx}',
+    '../../packages/app-dom/src/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
     extend: {

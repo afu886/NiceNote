@@ -12,8 +12,6 @@
     { "path": "./packages/ui" }
     // experimental mobile boundary：未升级为 supported 前，不进入 root tsc -b
     // { "path": "./apps/mobile" },
-    // { "path": "./packages/database" },
-    // { "path": "./packages/editor-bridge" },
-    // { "path": "./packages/ui-native" }
+    // { "path": "./packages/editor-bridge" }
   ]
 }

@@ -114,7 +114,7 @@ const useToolbarNavigation = (toolbarRef: React.RefObject<HTMLDivElement | null>
   }, [toolbarRef])
 
   useEffect(() => {
-    if (selectedIndex !== undefined && items[selectedIndex]) {
+    if (selectedIndex !== -1 && items[selectedIndex]) {
       items[selectedIndex].focus()
     }
   }, [selectedIndex, items])

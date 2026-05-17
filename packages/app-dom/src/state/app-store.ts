@@ -12,6 +12,7 @@ import { asNoteId, asWorkspaceId, createNoteUsecases, createTagUsecases } from '
 
 import { applyLanguageToDOM } from '../lib/apply-language'
 import { applyThemeToDOM } from '../lib/apply-theme'
+import { logError } from '../lib/logger'
 import type { AppTagInfo, Toast, ToastOptions } from '../types'
 
 const SIDEBAR_MIN_WIDTH = 260
@@ -353,7 +354,7 @@ export function createAppStore(runtime: AppRuntime) {
             set({ saveState: 'saved' })
             await projectNotes()
           } catch (err) {
-            console.error('保存笔记失败:', err)
+            logError('note-save', err)
             set({ saveState: 'unsaved' })
           }
         })()

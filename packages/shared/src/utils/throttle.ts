@@ -22,6 +22,8 @@ interface ThrottleOptions {
  *   // 卸载时记得取消
  *   onScroll.cancel();
  */
+// 约束必须用 (...args: any[]) => any：以保留被包裹函数 T 的完整签名，
+// 换成 unknown[] 会破坏对 Parameters<T> / ReturnType<T> 的推导。
 export function throttle<T extends (...args: any[]) => any>(
   fn: T,
   wait: number,

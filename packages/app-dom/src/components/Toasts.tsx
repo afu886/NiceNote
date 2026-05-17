@@ -14,6 +14,9 @@ export function Toasts() {
     <div className="fixed right-4 bottom-4 z-50 flex flex-col gap-2" aria-live="polite">
       {toasts.map((toast) => {
         const messageId = `toast-message-${toast.id}`
+        // 解构出 action：跨闭包边界 TS 不会保留 toast.action 的收窄，
+        // 取局部常量后即可在 onClick 内安全使用，无需非空断言。
+        const { action } = toast
         return (
           <div
             key={toast.id}
@@ -23,15 +26,15 @@ export function Toasts() {
             <span id={messageId} className="flex-1">
               {toast.message}
             </span>
-            {toast.action && (
+            {action && (
               <button
                 onClick={() => {
-                  toast.action!.onClick()
+                  action.onClick()
                   removeToast(toast.id)
                 }}
                 className="shrink-0 rounded px-2 py-0.5 font-medium text-primary transition-colors hover:bg-primary/10"
               >
-                {toast.action.label}
+                {action.label}
               </button>
             )}
             <button

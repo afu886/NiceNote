@@ -64,11 +64,6 @@ jobs:
       - name: Type check
         run: pnpm typecheck
 
-      - name: Type check (native packages)
-        run: |
-          pnpm --filter @nicenote/database typecheck
-          pnpm --filter @nicenote/ui-native typecheck
-
       - name: Test with coverage
         run: pnpm test -- --coverage
 

@@ -12,29 +12,28 @@ Technical baseline: pnpm 10.28.2 + Turborepo, strict TypeScript, React 19, Vite 
 
 ```text
 apps/
-  web/                  # React + Vite Web; localStorage repository; main stores in src/store/
+  web/                  # React + Vite Web host; src/host bootstraps the runtime; src/runtime + src/adapters hold the localStorage repositories
   desktop/
-    frontend/           # React + Vite Tauri frontend; IPC goes through src/bindings/tauri.ts
+    frontend/           # React + Vite Tauri host; src/host bootstraps the runtime; src/runtime holds Tauri repositories; IPC goes through src/bindings/tauri.ts
     src-tauri/          # Rust commands/services/db; filesystem .md files are Desktop's note source of truth
-  mobile/               # React Native 0.79; currently only minimal navigation and placeholder screens
+  mobile/               # React Native 0.79; minimal navigation shell only, not wired to the shared runtime
 
 packages/
-  app-shell/            # Shared UI composites, i18n, shortcuts, sidebar/toast store factories
-  editor/               # Tiptap editor; Markdown read/write helpers and toolbar
-  ui/                   # Radix web UI primitives, hooks, cn()
-  shared/               # Shared types, Zod schemas, utility functions
-  tokens/               # Design token sources and generated-tokens.css generator
-  database/             # Experimental native/mobile data layer; op-sqlite is an optional peer
-  editor-bridge/        # Experimental native WebView editor template
-  ui-native/            # Experimental native UI token mapping and components
+  core/                 # Shared business core: NoteId/TagId brand types, repository ports, usecases, capability model, Markdown rules, i18n catalog, reusable contract-test suites (no React/Tauri/localStorage)
+  app-dom/              # Web/Desktop shared React DOM product UI + unified Zustand view state; consumes an AppRuntime
+  editor/               # Tiptap editor; Markdown read/write helpers and toolbar (UI primitives from @topicly-ui/react)
+  ui/                   # Radix web UI primitives, hooks, cn() — still consumed by app-dom; being migrated to @topicly-ui
+  tokens/               # Design token sources and generated-tokens.css generator — still consumed by Web/Desktop; being migrated to @topicly-ui/tokens
+  shared/               # Slim platform/business-agnostic utilities and lightweight types
+  editor-bridge/        # Experimental native WebView editor bridge
 ```
 
-There is currently no `packages/domain` package. Do not add dependencies or imports pointing at it unless you first create the real package and wire it into the workspace.
+The unified domain model lives in `packages/core` (there is no separate `packages/domain`). Platform repository implementations live in each app's `src/runtime/`, never in shared packages. `packages/app-shell` was dismantled into `core` + `app-dom`; the experimental `database` / `ui-native` packages were removed.
 
 ## Agent Working Rules
 
 - Read the relevant files before editing. Act on the real code, not on filenames or stale docs alone.
-- Prefer the shortest correct path; reuse existing capabilities from `packages/ui`, `packages/shared`, `packages/app-shell`, and `packages/editor`.
+- Prefer the shortest correct path; reuse existing capabilities from `packages/core`, `packages/app-dom`, `packages/shared`, `packages/ui`, and `packages/editor`.
 - When changing shared code under `packages/`, check the Web, Desktop, and Mobile/experimental native consumers. Even if Mobile is not wired yet, avoid breaking package boundaries.
 - Remove replaced obsolete code; do not keep compatibility layers with no callers.
 - New internal package dependencies must use `workspace:*`.
@@ -48,8 +47,8 @@ There is currently no `packages/domain` package. Do not add dependencies or impo
 - Editor: use Markdown paths such as `readEditorMarkdown()` / `writeEditorMarkdown()` or `editor.storage.markdown.getMarkdown()`; do not persist `editor.getJSON()`.
 - Desktop: `.md` files are the source of truth for notes. SQLite is only for cache/settings-like data such as settings, recent folders, favorites, and tag colors; do not write note body content to SQLite.
 - Desktop note I/O changes should start in `apps/desktop/src-tauri/src/services/note_io.rs`; frontmatter logic should start in `services/frontmatter.rs`.
-- Web: current data lives in `apps/web/src/adapters/local-storage-note-repository.ts`; tags also use dedicated localStorage keys. Do not reintroduce the removed remote API layer.
-- Mobile: `apps/mobile` is not currently wired to `@nicenote/database`, `@nicenote/editor-bridge`, or the shared app-shell runtime. Confirm the current state before designing Mobile wiring.
+- Web: current data lives in `apps/web/src/adapters/local-storage-note-repository.ts` (tags use dedicated localStorage keys), wrapped to the `core` repository contracts via `apps/web/src/runtime/*.adapter.ts`. Do not reintroduce the removed remote API layer.
+- Mobile: `apps/mobile` is a minimal navigation shell, not wired to the shared `core` runtime or `@nicenote/editor-bridge`. The experimental `@nicenote/database` / `@nicenote/ui-native` packages were removed; a Mobile data layer would be implemented under `apps/mobile/src/runtime`. Confirm the current state before designing Mobile wiring.
 
 ## Desktop IPC Change Path
 
@@ -64,14 +63,14 @@ When adding or changing IPC, check this path in order:
 5. Add or update types and the `AppService` method in `apps/desktop/frontend/src/bindings/tauri.ts`.
 6. UI/store code should call only `AppService`, not scatter command strings through components.
 
-The Desktop store currently lives in `apps/desktop/frontend/src/store/useDesktopStore.ts`; it is not split into slice files. Coordinate cross-state behavior in that store or at the component/Hook layer, and inspect the existing pattern before splitting it.
+Web and Desktop now share one unified Zustand view-state store in `packages/app-dom/src/state/` (built on `core` usecases over the injected `AppRuntime`); the old `apps/desktop/frontend/src/store/useDesktopStore.ts` and `apps/web/src/store/*` were removed. Coordinate cross-state behavior in `app-dom` state or at the component/Hook layer, and inspect the existing pattern before splitting it.
 
 ## Frontend and UI Conventions
 
 - Web and Desktop frontend both import design tokens from `@nicenote/tokens/generated-tokens.css`, `token-utilities.css`, and `token-base.css`. Do not hand-edit generated output; change `packages/tokens/src` and run the generator.
 - Prefer Web UI components from `@nicenote/ui`; compose styles with `cn()` from `packages/ui/src/lib/utils.ts`.
 - Prefer `lucide-react` for icons; prefer the existing Radix-based primitives for interactive controls.
-- Theme and language application logic lives in `@nicenote/app-shell` helpers such as `applyThemeToDOM` and `applyLanguageToDOM`. When changing theme or language behavior, check the Web and Desktop providers/stores.
+- Theme and language application logic lives in `@nicenote/app-dom` helpers such as `applyThemeToDOM` and `applyLanguageToDOM` (internal to the package). When changing theme or language behavior, check the Web and Desktop providers/state.
 - Do not use blocking interactions such as `window.prompt` for editor link editing; use non-blocking UI such as Popover or Modal.
 
 ## Common Commands
@@ -94,10 +93,10 @@ pnpm --filter @nicenote/web test
 pnpm --filter @nicenote/web build
 pnpm --filter @nicenote/desktop build:frontend
 pnpm --filter @nicenote/editor test
-pnpm --filter @nicenote/app-shell test
+pnpm --filter @nicenote/core test
+pnpm --filter @nicenote/app-dom test
 pnpm --filter @nicenote/shared test
-pnpm --filter @nicenote/database typecheck
-pnpm --filter @nicenote/ui-native typecheck
+pnpm --filter @nicenote/editor-bridge typecheck
 pnpm --filter @nicenote/editor-bridge build:template
 ```
 

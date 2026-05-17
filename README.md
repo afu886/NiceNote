@@ -30,21 +30,19 @@ NiceNote 是一个跨平台笔记应用，支持富文本编辑，并以 Markdow
 
 ```text
 apps/
-  web/            # React 19 + Vite 7 + TailwindCSS v4 前端
+  web/            # React 19 + Vite 7 + TailwindCSS v4 前端宿主
   desktop/        # Tauri v2 桌面端
     src-tauri/    # Rust 后端：IPC commands、文件系统、SQLite 缓存
-    frontend/     # React 前端：复用 editor/ui/tokens/shared/domain 包
-  mobile/         # React Native iOS / Android
+    frontend/     # React 前端宿主：host 引导 runtime，复用 core/app-dom/editor/ui/shared 包
+  mobile/         # React Native iOS / Android（实验性，仅最小导航壳）
 packages/
-  app-shell/      # 共享 App Shell、hooks、i18n、store 工厂
-  domain/         # Repository 接口与契约测试，纯 TypeScript，零 I/O
+  core/           # 共享业务内核：领域模型、Repository 端口、usecase、契约测试套件，零 I/O
+  app-dom/        # Web/Desktop 共享 React DOM 产品界面与统一 Zustand 视图状态
   editor/         # Tiptap 富文本编辑器组件
-  ui/             # Radix UI 组件库与通用 hooks
-  tokens/         # Design tokens 与 CSS 生成
-  shared/         # 工具函数、类型、Zod schemas
-  database/       # op-sqlite + Drizzle ORM，供 native apps 使用
-  editor-bridge/  # Native 端 Tiptap WebView bridge
-  ui-native/      # Native UI 组件
+  ui/             # Radix UI 组件库与通用 hooks（仍被 app-dom 消费，逐步迁往 @topicly-ui）
+  tokens/         # Design tokens 与 CSS 生成（逐步迁往 @topicly-ui/tokens）
+  shared/         # 平台/业务无关工具函数与轻量类型
+  editor-bridge/  # Native 端 Tiptap WebView bridge（实验性）
 ```
 
 ## 快速开始
@@ -128,47 +126,35 @@ cd apps/desktop && cargo tauri build
 
 ## 架构概览
 
-### Domain 层
+### 业务内核（core）
 
-`packages/domain` 定义纯 TypeScript Repository 接口，不包含 I/O 依赖：
+`packages/core` 定义统一领域模型与 Repository 端口，纯 TypeScript、零 I/O：
 
-- `NoteRepository`
-- `SearchIndex`
-- `SettingsRepository`
-- `testNoteRepositoryContract()`
+- `NoteId` / `TagId` 品牌标识与领域类型
+- `NoteRepository` / `TagRepository` / `WorkspaceRepository` / `SettingsRepository` / `SearchService` 端口
+- usecase / action 工厂与能力发现模型（`SystemCapabilities`）
+- 可复用契约测试套件（普通模块导出，非 `.test`）
 
-各端提供自己的 Repository 实现，并通过 `@nicenote/app-shell` 的 `createRepositoryProvider()` 管理实例生命周期。Desktop 使用文件系统，Mobile 使用 SQLite，Web 当前数据层待接入新数据源。
+各端在自己的 `apps/*/src/runtime/` 实现这些端口并注入 `AppRuntime`：Desktop 走文件系统 + Tauri IPC，Web 走 localStorage，Mobile（实验性）规划走 SQLite。`app-dom` 只通过注入的 `AppRuntime` 获取能力，不直接触达平台 API。
 
 ### Desktop 数据流
 
 ```text
 前端组件
-  -> Store (Zustand slices)
-    -> Bindings (frontend/src/bindings/tauri.ts)
-      -> IPC (Tauri invoke)
-        -> Commands (src-tauri/src/commands/*.rs)
-          -> Services (src-tauri/src/services/*.rs)
-            -> 文件系统 (.md 文件) + SQLite 缓存
+  -> app-dom 视图状态 / core usecase
+    -> Desktop runtime (frontend/src/runtime/tauri-*.ts)
+      -> Bindings (frontend/src/bindings/tauri.ts)
+        -> IPC (Tauri invoke)
+          -> Commands (src-tauri/src/commands/*.rs)
+            -> Services (src-tauri/src/services/*.rs)
+              -> 文件系统 (.md 文件) + SQLite 缓存
 ```
 
 Desktop 端核心原则：文件系统中的 `.md` 文件是唯一数据源，SQLite 仅缓存 settings、recent folders、tag colors、favorites 等辅助数据。
 
-### Desktop 状态管理
+### 状态管理
 
-Desktop 前端采用“独立 store + slice 组合”的混合模式：
-
-- `useSidebarStore`：侧边栏折叠 / 展开状态
-- `useToastStore`：Toast 通知
-- `useDesktopStore`：组合 folder、note、search、settings、watcher 五个 slice
-
-### Web 状态管理
-
-Web 端使用 Zustand 独立 store：
-
-- `useNoteStore`：笔记 CRUD 与标签管理
-- `useSettingsStore`：主题与语言
-- `useSidebarStore`：侧边栏状态
-- `useToastStore`：Toast 通知
+Web 与 Desktop 共享同一套 Zustand 视图状态，位于 `packages/app-dom/src/state/`，构建在 `core` usecase 之上（取代已移除的 `useDesktopStore` 与 `apps/web/src/store/*`）。视图状态只负责选中笔记、侧栏、Toast、保存态投影、过滤器等 UI 编排；笔记 / 标签 / 设置等领域行为下沉到 `core`，平台差异通过 runtime 能力位表达，不分叉界面。
 
 ### 主题系统
 

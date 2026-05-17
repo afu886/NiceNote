@@ -17,6 +17,7 @@ interface ThrottleSettings {
  * @param dependencies The dependencies to watch for changes
  * @param options The throttle options
  */
+// 约束沿用 any[]/any 以透传 throttle 对 T 签名的保留；unknown[] 会破坏 Parameters<T> / ReturnType<T> 推导
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useThrottledCallback<T extends (...args: any[]) => any>(
   fn: T,

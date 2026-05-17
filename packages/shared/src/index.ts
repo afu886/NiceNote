@@ -7,12 +7,11 @@
 // ============================================================
 // 工具函数
 // ============================================================
-export { DEFAULT_NOTE_TITLE, LANG_STORAGE_KEY, THEME_STORAGE_KEY } from './constants'
+export { LANG_STORAGE_KEY } from './constants'
 export { toKebabCase } from './parsers'
 export type { Language, Settings, Theme } from './settings'
 export { debounce } from './utils/debounce'
-export { formatShortcutKey, isMac, MAC_SYMBOLS, parseShortcutKeys } from './utils/platform'
-export { sanitizeContent } from './utils/sanitize'
+export { isMac, parseShortcutKeys } from './utils/platform'
 export { extractSnippet } from './utils/snippet'
 export { generateSummary } from './utils/summary'
 export { throttle } from './utils/throttle'
@@ -21,10 +20,13 @@ export { getLinkValidationError } from './validators'
 
 // ============================================================
 // 领域 Schema & 类型
+//
+// 仅导出仍被 Web/Desktop runtime 适配层消费的类型；
+// note/tag schema 运行时对象已被 @nicenote/core 取代，不再对外导出，
+// 仅在文件内部支撑下方 z.infer 推导类型。
 // ============================================================
 export type {
   NoteCreateInput,
-  NoteInsert,
   NoteListItem,
   NoteListQuery,
   NoteListResult,
@@ -33,37 +35,4 @@ export type {
   NoteSelect,
   NoteUpdateInput,
 } from './schemas/note'
-export {
-  noteCreateSchema,
-  noteIdParamSchema,
-  noteInsertSchema,
-  noteListItemSchema,
-  noteListQuerySchema,
-  noteSearchQuerySchema,
-  noteSearchResultSchema,
-  noteSelectSchema,
-  noteUpdateSchema,
-} from './schemas/note'
-
-// ============================================================
-// Folder Schema & 类型
-// ============================================================
-export type { FolderCreateInput, FolderSelect, FolderUpdateInput } from './schemas/folder'
-export {
-  folderCreateSchema,
-  folderIdParamSchema,
-  folderSelectSchema,
-  folderUpdateSchema,
-} from './schemas/folder'
-
-// ============================================================
-// Tag Schema & 类型
-// ============================================================
-export type { TagCreateInput, TagSelect, TagUpdateInput } from './schemas/tag'
-export {
-  noteTagParamSchema,
-  tagCreateSchema,
-  tagIdParamSchema,
-  tagSelectSchema,
-  tagUpdateSchema,
-} from './schemas/tag'
+export type { TagSelect } from './schemas/tag'

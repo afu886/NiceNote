@@ -3,6 +3,7 @@ import { Component, createRef } from 'react'
 import type { ErrorInfo, ReactNode } from 'react'
 
 import i18n from '../i18n'
+import { logError } from '../lib/logger'
 
 interface Props {
   children: ReactNode
@@ -25,7 +26,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error('Uncaught error:', error, info.componentStack)
+    logError('app', error, info.componentStack)
   }
 
   componentDidUpdate(_: Props, prevState: State) {
@@ -68,7 +69,7 @@ export class EditorErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error('Editor error:', error, info.componentStack)
+    logError('editor', error, info.componentStack)
   }
 
   componentDidUpdate(_: Props, prevState: State) {
